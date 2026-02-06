@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roamly</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900" rel="stylesheet">
+
+    <style>
+
+        html {
+            scroll-padding-top: 40px;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Be Vietnam Pro", sans-serif;
+            font-weight: 400;
+        }
+
+        /***** LIQUID GLASS EFFECT *****/
+
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(2px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 3rem;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
+                        inset 0 4px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .glass::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3rem;
+            backdrop-filter: blur(1px);
+            box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, 1),
+                        inset 0px -9px 0px -8px rgba(255, 255, 255, 1);
+            opacity: 0.6;
+            z-index: -1;
+            filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
+        }
+
+        /***** HERO SECTION *****/
+
+        #hero {
+            height: 100vh;
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.4)), url("https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+            background-position: center;
+            background-size: cover;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 40px 40px 40px;
+        }
+
+        .logo a {
+            font-size: 2em;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+
+        #hero .content {
+            display: flex;
+            justify-content: center;
+            margin: 150px 100px 100px 100px;
+        }
+
+        #hero .content h1 {
+            font-family: "Be Vietnam Pro", sans-serif;
+            font-weight: 900;
+            font-size: 4em;
+            text-align: center;
+            color: white;
+        }
+
+        /***** NAV BAR *****/
+
+        nav.nav-bar {
+            display: flex;
+            padding: 5px 10px 5px 10px;
+            gap: 20px;
+        }
+
+        nav.nav-bar a {
+            display: inline-block;
+            padding: 10px 18px;
+            border-radius: 3rem;
+            text-decoration: none;
+            color: white;
+            transition: transform .15s ease;
+        }
+
+        nav.nav-bar a:hover {
+            background: rgba(255,255,255,.25);
+            transform: scale(1.1); 
+        }
+
+        /***** MAIN *****/
+
+        main {
+            display: flex;
+            margin: 50px;
+            gap: 30px;
+        }
+
+        section {
+            flex-grow: 1;
+        }
+
+        aside {
+            min-width: 150px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+
+        h2 {
+            margin: 0px 0px 20px 0px;
+            font-family: "Be Vietnam Pro", sans-serif;
+            font-weight: 700;
+            font-size: 2em;
+        }
+
+        .subheader {
+            margin-bottom: 0;
+            text-transform: uppercase;
+            font-weight: 400;
+            color: #58BEAC
+        }
+
+        /***** ABOUT SECTION *****/
+
+        #about p:first-child {
+            margin-top: 0px;
+        }
+
+        #about p:last-child {
+            margin-bottom: 0px;
+        }
+
+        /***** DESTINATIONS SECTION *****/
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 24px;
+        }
+
+        .card {
+            width: auto;
+            height: auto;
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: scale 0.25s ease;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 100%;
+            display: block;            
+            object-fit: cover;
+            transition: filter 0.25s ease;
+        }
+
+        .card-text {
+            margin: 0;
+            position: absolute;
+            left: 18px;
+            bottom: 18px;
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .card:hover {
+            scale: 1.05;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .card:hover .card-img {
+            filter: brightness(70%);
+        }
+
+        .card:hover .card-text {
+            opacity: 1;
+        }
+
+        /***** FOOTER *****/
+
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 50px;
+            background-color: #038B9B;
+            color: white;
+        }
+
+        footer h3 {
+            margin: 0;
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        footer a {
+            text-decoration: none;
+            color: white;
+        }
+
+        footer .nav-bar {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+
+        .footer-copy {
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-end;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <section id="hero">
+        <header>
+            <span class="logo"><a href="#home">Roamly</a></span>
+            <div class="glass">
+                <nav class="nav-bar">
+                    <a href="#hero">Home</a>
+                    <a href="#about">About</a>
+                    <a href="#destinations">Destinations</a>
+                    <a href="#quiz">Quiz</a>
+                    <a href="#compare">Compare</a>
+                </nav>
+            </div>
+        </header>
+        <div class="content">
+            <h1>Plan the trip you'll actually pull off</h1>
+        </div>
+    </section>
+
+    <main>
+        <aside>
+            <h2>About Roamly</h2>
+        </aside>
+
+        <section id="about">
+            <p>Roamly is a grad-trip planner designed to turn “we should go somewhere” into an actual plan. Senior spring gets busy fast, so we keep things lightweight enough to get everyone on the same page before finals, interviews, and post-grad schedules take over.</p>
+            <p>Roamly gives you several ways to get started. You can browse featured destinations for highlights, sample itineraries, and key trip details. Or, if you're tired of making decisions and want to speed up the process, take the Trip Quiz to get recommendations based on your group's vibe, budget, and travel style. Once you've narrowed things down to a few options, use the comparison table to line up options side-by-side and see what fits best.</p>
+            <p>Our approach is simple: plan enough to make it happen, then leave room for the good stuff. Choose a home base, commit to at least one "must-do" experience, and leave the rest open so the best parts can happen on their own.</p>
+        </section>
+    </main>
+
+    <main>
+        <section id="destinations">
+            <span class="subheader">Discover</span>
+            <h2>Featured Destinations</h2>
+
+            <div class="card-grid">
+                <article class="card">
+                    <img class="card-img" src="assets/greece.webp">   
+                    <h3 class="card-text">Greece</h3>
+                </article>
+                <article class="card">
+                    <img class="card-img" src="assets/coast-rica.jpg">
+                    <h3 class="card-text">Costa Rica</h3>
+                </article>
+                <article class="card">
+                    <img class="card-img" src="assets/portugal.jpg">
+                    <h3 class="card-text">Portugal</h3>
+                </article>
+                <article class="card">
+                    <img class="card-img" src="assets/peru.jpg">
+                    <h3 class="card-text">Peru</h3>
+                </article>
+                <article class="card">
+                    <img class="card-img" src="assets/japan.jpg">
+                    <h3 class="card-text">Japan</h3>
+                </article>
+                <article class="card">
+                    <img class="card-img" src="assets/thailand.webp">
+                    <h3 class="card-text">Thailand</h3>
+                </article>
+                <article class="card">
+                    <img class="card-img" src="assets/france.jpg">
+                    <h3 class="card-text">France</h3>
+                </article>
+                <article class="card">
+                    <img class="card-img" src="assets/south-africa.avif">
+                    <h3 class="card-text">South Africa</h3>
+                </article>
+                <article class="card">
+                    <img class="card-img" src="assets/iceland.jpeg">
+                    <h3 class="card-text">Iceland</h3>
+                </article>
+            </div>
+        </section> 
+    </main>
+
+    <footer>
+        <div class="footer-brand">
+            <span class="logo"><a href="#home">Roamly</a></span>
+        </div>
+
+        <nav class="nav-bar">
+            <a href="#hero">Home</a>
+            <a href="#about">About</a>
+            <a href="#destinations">Destinations</a>
+            <a href="#quiz">Quiz</a>
+            <a href="#compare">Compare</a>
+        </nav>
+
+        <span class="footer-copy"><p>&copy; 2026 Roamly.</p></span>
+    </footer>
+</body>
+</html>
