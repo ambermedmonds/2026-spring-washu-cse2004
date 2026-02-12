@@ -1,0 +1,141 @@
+body {
+    margin: 0;
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-weight: 400;
+}
+
+main {
+    display: flex;
+    margin: 20px 100px;
+}
+
+/******************* FONT STYLES ********************/
+
+h2 {
+    font-size: 1.5em;
+}
+
+h3 {
+    margin-bottom: 0;
+}
+
+p {
+    margin-top: 0;
+}
+
+/******************* NAVIGATION BAR ********************/
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 50px 50px 50px;
+}
+
+.logo {
+    font-size: 2em;
+    font-weight: bold;
+    text-decoration: none;
+    color: #2F2B2D;
+}
+
+.logo:hover {
+    color: #FF61D1
+}
+
+.nav-bar {
+    display: flex;
+    border-radius: 3rem;
+    background: #F4F2F0;
+}
+
+.nav-bar a {
+    display: inline-block;
+    padding: 15px 30px;
+    border-radius: 3rem;
+    text-decoration: none;
+    font-weight: 600;
+    color: #2F2B2D;
+    transition: transform 2s ease;
+}
+
+.nav-bar a:hover {
+    background: #FF61D1;
+    color: white;
+}
+
+.nav-bar a.selected {
+    background: #FF61D1;
+    color: white;
+}
+
+.nav-bar:hover a.selected:not(:hover) {
+    background: transparent;
+    color: #2F2B2D;
+}
+
+/******************* PROJECT GRID ********************/
+
+.card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.card {
+    width: 100%;
+    height: auto;
+    position: relative;
+    border-radius: 10px;
+    overflow: visible;
+}
+
+.card-img {
+    width: 100%;
+    height: 85%;
+    display: block;            
+    object-fit: cover;
+    border-radius: 10px;
+    transition: scale 0.25s ease;
+}
+
+.card-img:hover {
+    scale: 1.01;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.card-grid a {
+    text-decoration: none;
+    color: black;
+}
+
+/******************* ABOUT ME ********************/
+
+.headshot {
+    width: 70%;
+    border-radius: 10px;
+}
+
+/******************* INDIVIDUAL PROJECT PAGES ********************/
+
+aside {
+    min-width: 230px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.header {
+    margin: 0;
+    color: gray;
+}
+
+.project-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 30px;
+    justify-items: center;
+}
+    

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playground</title>
+    <style>
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        button .outer {
+            height: 1.75rem;
+        }
+
+        button {
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #ccc
+        }
+
+        .outer {
+            width: 200px;
+            height: 2rem;
+            background: lightgray;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .inner {
+            background: rgb(104, 104, 255);
+            height: 100%;
+            width: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.5s ease;
+        }
+
+    </style>
+</head>
+
+<body>
+    <button type="button" id="decrement">-</button>
+
+    <div class="outer">
+        <div class="inner">50%</div>
+    </div>
+
+    <button type="button" id="increment">+</button>
+</body>
+
+<script>
+
+    const incrementButton = document.querySelector('#increment')
+    const decrementButton = document.querySelector('#decrement')
+    const progressBar = document.querySelector('.inner')
+    
+    let count = 50
+
+    const updateProgress = () => {
+        progressBar.textContent = `${count}%`
+        progressBar.style.width = `${count}%`
+
+        if (count < 30) {
+            progressBar.style.background = 'red'
+        } else if (count > 70) {
+            progressBar.style.background = 'green'
+        } else {
+            progressBar.style.background = 'rgb(104, 104, 255)'
+        }
+    }
+
+    incrementButton.addEventListener('click', () => {
+        count += 10
+        updateProgress()
+    })
+
+    decrementButton.addEventListener('click', () => {
+        count -= 10
+        updateProgress()
+    })
+
+</script>
+</html>
