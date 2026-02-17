@@ -1,7 +1,12 @@
 /*************** ALL PAGES ***************/
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-    margin: 0;
     font-family: "Be Vietnam Pro", sans-serif;
     font-weight: 400;
 }
@@ -27,7 +32,7 @@ iframe {
 /*************** HERO SECTION (ALL PAGES) ***************/
 
 .hero {
-    height: 88vh;
+    height: 100vh;
     background-image: linear-gradient(rgba(14, 0, 47, 0.8), rgba(14,0,47,0.5)), url("./assets/hero-background.jpg");
     background-size: cover;
     background-position: center;
@@ -50,27 +55,19 @@ iframe {
 /*************** FONT STYLES ***************/
 
 h1 {
-    margin: 0;
     font-size: 5em;
 }
 
 h2 {
-    margin: 0;
     font-size: 2.5em;
 }
 
-h3 {
-    margin: 0;
-}
-
 p {
-    margin-top: 0;
+    margin-bottom: 10px;
     color: #A5A5A5;
 }
 
 ul {
-    margin: 0;
-    padding: 0;
     list-style: none;
 }
 
@@ -79,12 +76,10 @@ li {
 }
 
 a {
-    margin: 0;
     color: #BB86FC;
 }
 
 .header {
-    margin: 0;
     text-transform: uppercase;
     color: white;
 }
@@ -206,13 +201,13 @@ a {
 
 img {
     width: 100%;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     border-radius: 10px;
 }
 
 video {
     width: 100%;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     border-radius: 10px;
 }
 
@@ -231,8 +226,13 @@ video {
 }
 
 @media screen and (max-width: 1240px) {
+    .card-grid {
+        grid-template-columns: 1fr;
+        gap: 0px;
+    }
     .two-cols {
         flex-direction: column;
+        gap: 0px;
     }
     .first {
         width: 100%;
@@ -240,4 +240,60 @@ video {
     .second {
         width: 100%;
     }
+}
+
+/*************** CONTACT FORM ***************/
+
+.contact-header {
+    width: 50%;
+    padding-top: 10px;
+    font-size: 3em;
+}
+
+.contact-form {
+    width: 50%;
+}
+
+form * {
+    width: 500px;
+    display: grid;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+label {
+    margin-left: -15px;
+    font-size: 1.2em;
+    color: #FCFBFE;
+}
+
+input {
+    margin-bottom: 15px;
+    border: none;
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-size: 1.2em;
+}
+
+textarea {
+    border: none;
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-size: 1.2em;
+}
+
+#message {
+    height: 200px;
+}
+
+button {
+    margin: 40px 0px;
+    border: none;
+    border-radius: 10px;
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-size: 1.2em;
+    background-color: #BB86FC;
+    color: #FCFBFE;
+}
+
+button:hover { 
+  filter: brightness(0.8);
 }
