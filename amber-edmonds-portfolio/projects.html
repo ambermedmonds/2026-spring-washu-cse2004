@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amber's Portfolio</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,6 +26,7 @@
 
             <div class="hero-contents">
                 <h1>Hi, I'm Amber!</h1>
+                <h2 class="hero-description">I'm a designer with a business background who enjoys building meaningful digital experiences.</h2>
             </div>
         </section>
     </header>
@@ -32,66 +34,145 @@
     <main>
         <section>
             <div class="contents">
-                <h2>Case Studies</h2>
-                <div class="card-grid">
-                    <a href="club-discovery.html">
-                        <article class="card">
-                            <img class="card-img" src="assets/platform-cover.png">   
-                            <h3 class="header">Club Discovery Platform</h3>
-                            <p class="subheader">UX Research · Prototyping · User Testing</p>
-                        </article>
-                    </a>
-                    <a href="ramen-website.html">
-                        <article class="card">
-                            <img class="card-img" src="assets/ramen-cover.png">
-                            <h3 class="header">Ramen Website</h3>
-                            <p class="subheader">Prototyping · Interaction Design · Responsive Web Design</p>
-                        </article>
-                    </a>
+                <h2 class="project-header">Projects</h2>
+                <div class="project-tags">
+                    <button class="tag is-active" type="button" data-type="all">
+                        All
+                    </button>
+                    <button class="tag" type="button" data-type="UX/UI">
+                        UX/UI
+                    </button>
+                    <button class="tag" type="button" data-type="web">
+                        Web
+                    </button>
+                    <button class="tag" type="button" data-type="ads">
+                        Ads
+                    </button>
+                    <button class="tag" type="button" data-type="social">
+                        Social
+                    </button>
                 </div>
 
-                <br><br>
-
-                <h2>Professional Work</h2>
                 <div class="card-grid">
-                    <a href="press-ads.html">
-                        <article class="card">
-                            <img class="card-img" src="assets/HR-cover.png">
-                            <h3 class="header">Press Ads</h3>
-                            <p class="subheader">Graphic Design</p>
-                        </article>
-                    </a>
-                    <a href="auto-ads.html">
-                        <article class="card">
-                            <img class="card-img" src="assets/auto-cover.png">
-                            <h3 class="header">Automotive Ads</h3>
-                            <p class="subheader">Graphic Design · Motion Design</p>
-                        </article>
-                    </a>
-                </div>
-
-                <br><br>
-            
-                <h2>For Fun 😊</h2>
-                <div class="card-grid">
-                    <a href="wten.html">
-                        <article class="card">
-                            <img class="card-img" src="assets/wten-cover.png">
-                            <h3 class="header">WashU Women's Tennis Social Media</h3>
-                            <p class="subheader">Graphic Design</p>
-                        </article>
-                    </a>
-                    <a href="twn.html">
-                        <article class="card">
-                            <img class="card-img" src="assets/TWN-cover.png">
-                            <h3 class="header">The Women's Network Social Media</h3>
-                            <p class="subheader">Graphic Design</p>
-                        </article>
-                    </a>
+                    
+                    <article class="card" data-type="UX/UI">
+                        <a href="club-discovery.html"><img class="card-img" src="assets/platform-cover.png" alt="Club Discovery platform interface displayed on a laptop screen"></a>   
+                        <div class="project-tags">
+                            <div class="tag">
+                                UX/UI
+                            </div>
+                            <div class="tag">
+                                Figma
+                            </div>
+                        </div>
+                        <h3 class="header">Club Discovery Platform</h3>
+                        <p class="subheader">Conducted UX research and designed a prototype to improve club discovery and onboarding</p>
+                    </article>
+                    
+                    <article class="card" data-type="web UX/UI">
+                        <a href="ramen-website.html"><img class="card-img" src="assets/ramen-cover.png" alt="Instant noodles website mockup featuring a hero section and educational content about the history of instant noodles"></a>
+                        <div class="project-tags">
+                            <div class="tag">
+                                Web
+                            </div>
+                            <div class="tag">
+                                UX/UI
+                            </div>
+                            <div class="tag">
+                                Figma
+                            </div>
+                            <div class="tag">
+                                HTML/CSS
+                            </div>
+                        </div>
+                        <h3 class="header">Ramen Website</h3>
+                        <p class="subheader">Designed and built a responsive HTML/CSS site that tells the story of instant noodles</p>
+                    </article>
+                    
+                    <article class="card" data-type="ads">
+                        <a href="auto-ads.html"><img class="card-img" src="assets/auto-cover.png" alt="Automotive digital advertisements displayed across mobile and desktop screens"></a>
+                        <div class="project-tags">
+                            <div class="tag">
+                                Ads
+                            </div>
+                            <div class="tag">
+                                Photoshop
+                            </div>
+                            <div class="tag">
+                                AfterEffects
+                            </div>
+                        </div>
+                        <h3 class="header">Automotive Ads</h3>
+                        <p class="subheader">Produced compliance-ready multi-format ads for top automotive brands</p>
+                    </article>
+                    
+                    
+                    <article class="card" data-type="ads">
+                        <a href="press-ads.html"><img class="card-img" src="assets/HR-cover.png" alt="Digital perfume advertisements displayed on a smartphone alongside social media-style graphics"></a>
+                        <div class="project-tags">
+                            <div class="tag">
+                                Ads
+                            </div>
+                            <div class="tag">
+                                Photoshop
+                            </div>
+                        </div>
+                        <h3 class="header">Press Ads</h3>
+                        <p class="subheader">Designed press-quote ads, translating reviews into scroll-stopping creative</p>
+                    </article>
+                  
+                    
+                    <article class="card" data-type="social">
+                        <a href="wten.html"><img class="card-img" src="assets/wten-cover.png" alt="WashU women's tennis social media graphic collection featuring match announcements, rankings, and player highlights"></a>
+                        <div class="project-tags">
+                            <div class="tag">
+                                Social
+                            </div>
+                            <div class="tag">
+                                Photoshop
+                            </div>
+                            <div class="tag">
+                                Canva
+                            </div>
+                        </div>
+                        <h3 class="header">WashU Women's Tennis Social Media</h3>
+                        <p class="subheader">Created Instagram graphics highlighting gamedays, match results, rankings, and athlete spotlights</p>
+                    </article>
+                    
+                    
+                    <article class="card" data-type="social">
+                        <a href="twn.html"><img class="card-img" src="assets/TWN-cover.png" alt="Collection of Instagram-style promotional posts for a university club featuring green and pink designs, highlighting events, applications, meetings, and a career panel"></a>
+                        <div class="project-tags">
+                            <div class="tag">
+                                Social
+                            </div>
+                            <div class="tag">
+                                Canva
+                            </div>
+                        </div>
+                        <h3 class="header">The Women's Network Social Media</h3>
+                        <p class="subheader">Designed social content to promote events, recruit members, and build a consistent visual system</p>
+                    </article>
+                    
                 </div>
             </div> 
         </section>
     </main>
+
+    <footer>
+        <div class="contents">
+            <nav id="social-nav">
+                <a href="https://www.linkedin.com/in/ambermedmonds/" target="_blank">
+                    <i class="fa fa-linkedin" aria-hidden="true"></i>
+                </a>
+                <a href="mailto:a.m.edmonds@wustl.edu" target="_blank">
+                    <i class="fa fa-envelope" aria-hidden="true"></i>
+                </a> 
+            </nav>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 
 </body>
 </html>
