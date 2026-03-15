@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emoji Memory Match</title>
+  <style>
+    :root {
+      --bg: #f2efe8;
+      --panel: #ffffff;
+      --text: #172121;
+      --accent: #2f7a6c;
+      --card-back: #314e52;
+      --match: #77a88d;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(47, 122, 108, 0.2), transparent 35%),
+        radial-gradient(circle at 85% 85%, rgba(49, 78, 82, 0.2), transparent 40%),
+        var(--bg);
+      display: grid;
+      place-items: center;
+      padding: 24px 16px;
+    }
+
+    .game {
+      width: min(720px, 100%);
+      background: var(--panel);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: 1.9rem;
+      text-align: center;
+      letter-spacing: 0.3px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    .stat {
+      background: #f7f9f8;
+      border-radius: 10px;
+      padding: 8px 12px;
+      min-width: 120px;
+      text-align: center;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .card {
+      aspect-ratio: 1 / 1;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: clamp(1.5rem, 4.4vw, 2.2rem);
+      background: var(--card-back);
+      color: transparent;
+      transition: transform 0.15s ease, background-color 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
+    }
+
+    .card:hover:not(.flipped):not(.matched) {
+      transform: translateY(-2px);
+    }
+
+    .card.flipped,
+    .card.matched {
+      background: #ffffff;
+      color: var(--text);
+      outline: 2px solid #d5dfdd;
+    }
+
+    .card.matched {
+      background: var(--match);
+      color: #12362f;
+      cursor: default;
+      outline-color: transparent;
+    }
+
+    .message {
+      margin-top: 14px;
+      min-height: 26px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .actions {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 9px 16px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--accent);
+      cursor: pointer;
+    }
+
+    @media (max-width: 520px) {
+      .game {
+        padding: 16px;
+      }
+
+      .board {
+        gap: 8px;
+      }
+
+      .stats {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="game">
+    <h1>Memory Match</h1>
+
+    <section class="stats" aria-label="Game stats">
+      <div class="stat">Moves: <span id="moves">0</span></div>
+      <div class="stat">Time: <span id="timer">00:00</span></div>
+    </section>
+
+    <section id="board" class="board" aria-label="Memory board"></section>
+
+    <p id="message" class="message" aria-live="polite"></p>
+
+    <div class="actions">
+      <button id="restartBtn" class="btn" type="button">Restart</button>
+    </div>
+  </main>
+
+  <script>
+    const emojis = ["🍕", "🚀", "🐶", "🌈", "🎧", "⚽", "🍩", "🌻"];
+    const board = document.getElementById("board");
+    const movesEl = document.getElementById("moves");
+    const timerEl = document.getElementById("timer");
+    const messageEl = document.getElementById("message");
+    const restartBtn = document.getElementById("restartBtn");
+
+    let cards = [];
+    let firstCard = null;
+    let secondCard = null;
+    let lockBoard = false;
+    let moves = 0;
+    let matchedPairs = 0;
+    let seconds = 0;
+    let timerId = null;
+    let timerStarted = false;
+    let pendingFlipTimeout = null;
+
+    function shuffle(array) {
+      const result = [...array];
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result;
+    }
+
+    function formatTime(totalSeconds) {
+      const mins = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+      const secs = String(totalSeconds % 60).padStart(2, "0");
+      return `${mins}:${secs}`;
+    }
+
+    function startTimer() {
+      if (timerStarted) return;
+      timerStarted = true;
+      timerId = setInterval(() => {
+        seconds += 1;
+        timerEl.textContent = formatTime(seconds);
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+    }
+
+    function updateMoves() {
+      movesEl.textContent = String(moves);
+    }
+
+    function resetTurn() {
+      firstCard = null;
+      secondCard = null;
+      lockBoard = false;
+    }
+
+    function showWinMessage() {
+      messageEl.textContent = `Congratulations! You found all pairs in ${moves} moves and ${formatTime(seconds)}.`;
+    }
+
+    function createCard(emoji, id) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "card";
+      button.dataset.emoji = emoji;
+      button.dataset.id = String(id);
+      button.setAttribute("aria-label", "Hidden card");
+      button.textContent = emoji;
+      return button;
+    }
+
+    function flipCard(card) {
+      card.classList.add("flipped");
+      card.setAttribute("aria-label", `Card ${card.dataset.emoji}`);
+    }
+
+    function unflipCard(card) {
+      card.classList.remove("flipped");
+      card.setAttribute("aria-label", "Hidden card");
+    }
+
+    function markMatched(card) {
+      card.classList.add("matched");
+      card.disabled = true;
+    }
+
+    function handleCardClick(event) {
+      const card = event.target.closest(".card");
+      if (!card || lockBoard) return;
+      if (card === firstCard || card.classList.contains("matched")) return;
+
+      startTimer();
+      flipCard(card);
+
+      if (!firstCard) {
+        firstCard = card;
+        return;
+      }
+
+      secondCard = card;
+      lockBoard = true;
+      moves += 1;
+      updateMoves();
+
+      const isMatch = firstCard.dataset.emoji === secondCard.dataset.emoji;
+      if (isMatch) {
+        markMatched(firstCard);
+        markMatched(secondCard);
+        matchedPairs += 1;
+        resetTurn();
+
+        if (matchedPairs === emojis.length) {
+          stopTimer();
+          showWinMessage();
+        }
+      } else {
+        const cardOne = firstCard;
+        const cardTwo = secondCard;
+        pendingFlipTimeout = setTimeout(() => {
+          unflipCard(cardOne);
+          unflipCard(cardTwo);
+          pendingFlipTimeout = null;
+          resetTurn();
+        }, 700);
+      }
+    }
+
+    function initializeGame() {
+      stopTimer();
+      if (pendingFlipTimeout) {
+        clearTimeout(pendingFlipTimeout);
+        pendingFlipTimeout = null;
+      }
+      cards = shuffle([...emojis, ...emojis]);
+      board.innerHTML = "";
+
+      firstCard = null;
+      secondCard = null;
+      lockBoard = false;
+      moves = 0;
+      matchedPairs = 0;
+      seconds = 0;
+      timerStarted = false;
+      messageEl.textContent = "";
+
+      updateMoves();
+      timerEl.textContent = formatTime(seconds);
+
+      cards.forEach((emoji, index) => {
+        board.appendChild(createCard(emoji, index));
+      });
+    }
+
+    board.addEventListener("click", handleCardClick);
+    restartBtn.addEventListener("click", initializeGame);
+
+    initializeGame();
+  </script>
+</body>
+</html>
