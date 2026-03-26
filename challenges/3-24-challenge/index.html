@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3/24 Challenge</title>
+    <style>
+
+        :root {
+            --primary-color: oklch(52.972% 0.08741 46.804);
+            --accent-color: oklch(72.964% 0.14466 13.839);
+            --neutral-color: oklch(97.419% 0.00997 57.879);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            background-color: var(--neutral-color);
+        }
+
+        body {
+            padding-bottom: 50px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 50px 30px 40px 30px;
+        }
+
+        .hero::before {
+            content: "☕";
+            display: block;
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: var(--primary-color)
+        }
+
+        @keyframes pulse {
+            0%   { transform: scale(1); }
+            50%  { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .animation {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .search-section {
+            max-width: 900px;
+            margin: 0 auto 30px;
+            padding: 0 clamp(30px, 4vw, 30px);
+        }
+
+        .search-field {
+            position: relative;
+        }
+
+        .search-input::-webkit-search-cancel-button {
+            display: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 100px 12px 14px;
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            color: var(--primary-color);
+            font-size: 1rem;
+            background: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .search-input::placeholder {
+            color: var(--primary-color);
+        }
+
+        .search-field:has(.search-input:not(:placeholder-shown)) .search-submit {
+            background: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        .search-submit {
+            position: absolute;
+            top: 7px;
+            right: 7px;  
+            padding: 8px 12px;     
+            border: none;
+            border-radius: 7px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fff;
+            background: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-submit:hover {
+            background: var(--accent-color);
+        }
+
+        .grid {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 clamp(30px, 4vw, 30px);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.5s ease;
+        }
+
+        .card img {
+            width: 100%;
+            object-fit: cover;
+            display: block;
+            transition: all 0.5s ease;
+        }
+
+        .card-toggle {
+            display: none;
+        }
+
+        .card:has(.card-toggle:checked) .card-img::after {
+            content: "Selected";
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background: var(--accent-color);
+            color: white;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+        }
+
+        .food-grid .card:hover {
+            transform: rotate(-2deg) scale(1.05) translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .drink-grid {
+            margin-top: 30px;
+        }
+
+        .drink-grid .card img:hover {
+            filter: blur(0px);
+            clip-path: circle(100%);
+        }
+
+        .fade-bottom {
+            mask-image: linear-gradient(to bottom, black 50%, transparent);
+        }
+
+        .overlay {
+            background: var(--neutral-color);
+            mix-blend-mode: multiply;
+        }
+
+        .blurry {
+            filter: blur(5px);
+        }
+
+        .star {
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+      <h1 class="animation">Build Your Dream Breakfast</h1>
+    </section>
+
+    <section class="search-section">
+        <form>
+            <div class="search-field">
+                <input class="search-input" type="search" placeholder="Search food or drink..."/>
+                <button class="search-submit" type="submit">Search</button>
+            </div>
+        </form>
+    </section>
+
+    <section>
+        <div class="grid food-grid">
+            <label class="card">
+                <input class="card-toggle" type="checkbox"/>
+                <span class="card-img">
+                    <img class="overlay" src="images/egg.png" alt="Egg breakfast"/>
+                </span>
+            </label>
+
+            <label class="card">
+                <input class="card-toggle" type="checkbox"/>
+                <span class="card-img">
+                    <img class="overlay fade-bottom" src="images/avocado-toast.png" alt="Avocado toast"/>
+                </span>
+            </label>
+
+            <label class="card">
+                <input class="card-toggle" type="checkbox"/>
+                <span class="card-img">
+                    <img class="overlay" src="images/acai-bowl.png" alt="Acai bowl"/>
+                </span>
+            </label>
+
+            <label class="card">
+                <input class="card-toggle" type="checkbox"/>
+                <span class="card-img">
+                    <img class="overlay fade-bottom" src="images/bagel.png" alt="Breakfast bagel"/>
+                </span>
+            </label>
+
+            <label class="card">
+                <input class="card-toggle" type="checkbox"/>
+                <span class="card-img">
+                    <img class="overlay fade-bottom" src="images/pancake.png" alt="Pancakes"/>
+                </span>
+            </label>
+
+            <label class="card">
+                <input class="card-toggle" type="checkbox"/>
+                <span class="card-img">
+                    <img class="overlay" src="images/bacon.png" alt="Bacon"/>
+                </span>
+            </label>
+
+            <label class="card">
+                <input class="card-toggle" type="checkbox"/>
+                <span class="card-img">
+                    <img class="overlay fade-bottom" src="images/yogurt-bowl.png" alt="Yogurt bowl"/>
+                </span>
+            </label>
+
+            <label class="card">
+                <input class="card-toggle" type="checkbox"/>
+                <span class="card-img">
+                    <img class="overlay" src="images/waffle.png" alt="Waffle"/>
+                </span>
+            </label>
+        </div>
+
+        <div class="grid drink-grid">
+            <label class="card">
+                <input class="card-toggle" type="checkbox"/>
+                <span class="card-img">
+                    <img class="overlay star blurry" src="images/coffee.png" alt="Iced coffee"/>
+                </span>
+            </label>
+
+            <label class="card">
+                <input class="card-toggle" type="checkbox"/>
+                <span class="card-img">
+                    <img class="overlay star blurry" src="images/matcha.png" alt="Iced matcha"/>
+                </span>
+            </label>
+
+            <label class="card">
+                <input class="card-toggle" type="checkbox"/>
+                <span class="card-img">
+                    <img class="overlay star blurry" src="images/juice.png" alt="Orange juice"/>
+                </span>
+            </label>
+
+            <label class="card">
+                <input class="card-toggle" type="checkbox"/>
+                <span class="card-img">
+                    <img class="overlay star blurry" src="images/smoothie.png" alt="Smoothie"/>
+                </span>
+            </label>
+        </div>
+    </section>
+
+
+</body>
+</html>
