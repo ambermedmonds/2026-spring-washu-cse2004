@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Breakwise</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/png" href="images/plant.png" />
+    <link rel="shortcut icon" href="images/plant.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Breakwise</h1>
+      <p>Smart study breaks based on your environment</p>
+    </header>
+
+    <main class="app-shell">
+      <section id="overview-panel" class="panel overview-panel" aria-label="Current weather and time">
+        <div class="overview-grid">
+          <div class="time-block">
+            <h3>Current Time</h3>
+            <p id="clock-line" class="clock-big">--:--</p>
+            <p id="time-label" class="time-of-day">--</p>
+            <p id="timezone-detail" class="weather-detail">Timezone: --</p>
+          </div>
+
+          <div class="weather-block">
+            <h3>Current Weather</h3>
+            <p id="weather-temp" class="weather-temp">--°F</p>
+            <p id="weather-condition" class="weather-condition">Unknown</p>
+            <p id="weather-detail" class="weather-detail">Feels like --°F · Wind -- mph</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="setup-panel" class="panel" aria-labelledby="controls-title">
+        <h2 id="controls-title">Session Setup</h2>
+        <form id="session-form" class="controls-grid">
+          <label for="focus-length">Focus Length (minutes)</label>
+          <input
+            id="focus-length"
+            name="focus-length"
+            type="number"
+            min="1"
+            step="1"
+            value="30"
+            placeholder="Enter minutes (e.g. 30)"
+            inputmode="numeric"
+            required
+          />
+
+          <fieldset class="energy-fieldset">
+            <legend>Energy Level</legend>
+            <div class="energy-chips">
+              <input class="energy-chip-input" type="radio" id="energy-low" name="energy-level" value="low" />
+              <label class="energy-chip-label" for="energy-low">Low</label>
+
+              <input
+                class="energy-chip-input"
+                type="radio"
+                id="energy-okay"
+                name="energy-level"
+                value="okay"
+                checked
+              />
+              <label class="energy-chip-label" for="energy-okay">Okay</label>
+
+              <input class="energy-chip-input" type="radio" id="energy-high" name="energy-level" value="high" />
+              <label class="energy-chip-label" for="energy-high">High</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="location-fieldset">
+            <legend>Location</legend>
+            <div class="location-actions">
+              <button id="use-location-btn" type="button" class="secondary-btn location-btn">Use My Location</button>
+              <button id="manual-location-toggle-btn" type="button" class="secondary-btn location-btn">Enter City / ZIP</button>
+            </div>
+
+            <div id="manual-location-group" class="manual-location-group hidden">
+              <label for="manual-location-input">City or ZIP</label>
+              <div class="manual-location-row">
+                <input
+                  id="manual-location-input"
+                  name="manual-location-input"
+                  type="text"
+                  placeholder="e.g. St Louis or 63130"
+                  autocomplete="address-level2 postal-code"
+                />
+                <button id="manual-location-apply-btn" type="button" class="secondary-btn">Apply</button>
+              </div>
+            </div>
+          </fieldset>
+
+          <button id="start-focus-btn" type="submit" class="primary-btn">Start Focus Session</button>
+        </form>
+      </section>
+
+      <section id="timer-panel" class="panel timer-panel" aria-labelledby="timer-title">
+        <h2 id="timer-title">Timer</h2>
+        <p id="mode-label" class="mode-label">Ready</p>
+        <p id="timer-display" class="timer-display">00:00</p>
+
+        <div class="progress-track" aria-hidden="true">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
+
+        <div id="focus-controls" class="timer-controls hidden">
+          <button id="pause-resume-btn" type="button" class="secondary-btn">Pause Session</button>
+          <button id="cancel-focus-btn" type="button" class="secondary-btn danger-btn">Cancel Session</button>
+        </div>
+      </section>
+
+      <section id="recommendation-panel" class="panel hidden" aria-labelledby="recommendation-title">
+        <h2 id="recommendation-title">Break Recommendation</h2>
+
+        <article class="recommendation-card">
+          <div class="pill-row">
+            <span id="recommendation-category" class="pill">Reset</span>
+            <span id="recommendation-duration" class="pill muted">8 min</span>
+          </div>
+
+          <h3 id="recommendation-title-text">Quick reset break</h3>
+          <p id="recommendation-description">Stand up, stretch your shoulders, and hydrate for a few minutes.</p>
+          <p id="recommendation-reason" class="reason-line">Why this fits now: You just completed a focus session.</p>
+
+          <div class="button-row">
+            <button id="start-break-btn" type="button" class="primary-btn">Start Break Timer</button>
+          </div>
+        </article>
+      </section>
+
+      <section id="status-panel" class="panel status-panel" aria-live="polite">
+        <h2 class="status-heading">Status</h2>
+        <p id="status-message" class="status-message">Waiting to start.</p>
+      </section>
+    </main>
+
+    <div id="plant-companion" class="plant-sticker mode-idle weather-none" aria-hidden="true">
+      <img id="plant-sticker-img" src="images/plant.png" alt="" loading="lazy" decoding="async" />
+    </div>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>
