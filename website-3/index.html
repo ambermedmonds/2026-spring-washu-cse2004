@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smiski After Dark | Interactive Glowkin Room</title>
+    <meta
+      name="description"
+      content="Smiski After Dark is a cozy hidden-world room experience where tiny original Glowkins appear in interactive zones with weather-reactive lighting, collection tracking, and playful microinteractions."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-weather="cloudy" data-phase="night">
+    <div class="flashlight" aria-hidden="true"></div>
+    <div class="dust-layer" id="dust-layer" aria-hidden="true"></div>
+
+    <header class="hero" id="hero">
+      <div class="hero-copy glass">
+        <p class="eyebrow">Hidden Room Archive</p>
+        <h1>Smiski After Dark</h1>
+        <p class="subtitle">A hidden-world room experience</p>
+        <p class="hero-text">
+          When the lights dim, tiny Glowkins wake up in the corners of the room. Explore each zone,
+          discover their personalities, and track your nighttime finds.
+        </p>
+        <button id="start-exploring" class="cta" type="button">Start Exploring</button>
+      </div>
+
+      <div class="hero-peek" aria-hidden="true">
+        <div class="glowkin-silhouette glowkin-peek"></div>
+      </div>
+    </header>
+
+    <main>
+      <section class="room-section" id="room-section" aria-labelledby="room-title">
+        <div class="room-toolbar">
+          <h2 id="room-title">Room Explorer</h2>
+
+          <div class="toolbar-actions">
+            <button id="lamp-toggle" class="chip" type="button" aria-pressed="true">Lamp: On</button>
+            <button id="open-collection" class="chip chip-glow" type="button">Collection</button>
+          </div>
+        </div>
+
+        <div class="atmo-panel glass" aria-live="polite">
+          <p class="atmo-label">Atmosphere</p>
+          <p id="atmo-summary">Calibrating weather mood...</p>
+          <div class="atmo-meta">
+            <span id="atmo-city">St. Louis</span>
+            <span id="atmo-time">--</span>
+            <span id="atmo-weather">--</span>
+          </div>
+        </div>
+
+        <div class="room-scene-wrap">
+          <div class="room-scene" id="room-scene" tabindex="0" aria-label="Interactive bedroom with Glowkin zones">
+            <div class="scene-backdrop" aria-hidden="true">
+              <div class="wall-gradient"></div>
+              <div class="window">
+                <div class="moon"></div>
+                <div class="raindrops" id="raindrops"></div>
+              </div>
+              <div class="floor"></div>
+              <div class="lamp-pool"></div>
+            </div>
+
+            <!-- Decorative objects -->
+            <div class="desk-object" aria-hidden="true">
+              <div class="book-stack">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <div class="mini-laptop"></div>
+            </div>
+
+            <div class="bookshelf-object" aria-hidden="true">
+              <div class="shelf-books">
+                <i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+            </div>
+
+            <div class="bed-object" aria-hidden="true">
+              <div class="pillow"></div>
+              <div class="blanket"></div>
+            </div>
+
+            <div class="plant-object" id="plant-object" aria-hidden="true">
+              <div class="pot"></div>
+              <div class="leaf leaf-a"></div>
+              <div class="leaf leaf-b"></div>
+              <div class="leaf leaf-c"></div>
+            </div>
+
+            <div class="drawer-object" id="drawer-object" aria-hidden="true">
+              <div class="drawer-front"></div>
+              <div class="drawer-knob"></div>
+            </div>
+
+            <!-- Interactive zones -->
+            <button class="zone zone-desk" data-zone="desk" type="button">
+              <span class="zone-label">Desk Nook</span>
+            </button>
+
+            <button class="zone zone-bookshelf" data-zone="bookshelf" type="button">
+              <span class="zone-label">Bookshelf</span>
+            </button>
+
+            <button class="zone zone-bed" data-zone="bed" type="button">
+              <span class="zone-label">Bedside</span>
+            </button>
+
+            <button class="zone zone-plant" data-zone="plant" type="button">
+              <span class="zone-label">Plant Corner</span>
+            </button>
+
+            <button class="zone zone-drawer" data-zone="drawer" type="button">
+              <span class="zone-label">Storage Drawer</span>
+            </button>
+
+            <!-- Glowkins -->
+            <div class="glowkin glowkin-nim" data-glowkin="nimble-nim" data-zone="desk" aria-hidden="true"></div>
+            <div class="glowkin glowkin-echo" data-glowkin="echo-moss" data-zone="bookshelf" aria-hidden="true"></div>
+            <div class="glowkin glowkin-luma" data-glowkin="luma-lull" data-zone="bed" aria-hidden="true"></div>
+            <div class="glowkin glowkin-pip" data-glowkin="pip-puffle" data-zone="plant" aria-hidden="true"></div>
+            <div class="glowkin glowkin-vela" data-glowkin="vela-guard" data-zone="drawer" aria-hidden="true"></div>
+          </div>
+
+          <aside class="info-card glass" id="info-card" aria-live="polite">
+            <button id="close-zone" class="close-zone" type="button">Back</button>
+            <p class="info-kicker">Glowkin Profile</p>
+            <h3 id="info-name">Select a zone</h3>
+            <ul class="info-list">
+              <li><strong>Personality:</strong> <span id="info-trait">—</span></li>
+              <li><strong>Favorite Spot:</strong> <span id="info-spot">—</span></li>
+            </ul>
+            <p id="info-line">Click a room zone to discover who lives there.</p>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <aside class="collection-drawer" id="collection-drawer" aria-label="Discovered Glowkins">
+      <div class="collection-head">
+        <h2>Glowkin Collection</h2>
+        <button id="close-collection" class="chip" type="button">Close</button>
+      </div>
+      <p id="found-counter" class="found-counter">0 / 5 discovered</p>
+      <div class="collection-grid" id="collection-grid"></div>
+    </aside>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
