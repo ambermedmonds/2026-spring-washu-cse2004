@@ -3,45 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smiski Adventures</title>
+    <title>Smiski Adventures | Interactive Series Guide</title>
     <meta
       name="description"
-      content="Explore a cozy dollhouse, visit each room, and discover hidden Smiskis."
+      content="Explore a cozy dollhouse and browse official Smiski series by room."
     />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="mode-panel" aria-live="polite">
       <span id="mode-label">Day Mode</span>
-      <button id="mode-toggle" class="small-button" type="button">Preview Night</button>
+      <button id="mode-toggle" class="small-button mode-switch" type="button" aria-label="Toggle day and night mode">
+        <span class="switch-icon" aria-hidden="true"></span>
+      </button>
     </div>
 
     <main>
-      <section id="home-screen" class="screen is-active" aria-labelledby="home-title">
+      <section id="home-screen" class="screen is-active intro-mode" aria-labelledby="home-title">
         <div class="intro">
           <h1 id="home-title">SMISKI ADVENTURES</h1>
-          <p>Explore each zone, discover their personalities, and track your finds</p>
-          <button id="start-button" class="primary-button" type="button">Start Exploring</button>
-          <p id="found-counter" class="found-counter">0 / 24 Smiskis discovered</p>
+          <p>Explore each room, preview the series, and shop the official Smiski collections</p>
+          <button id="start-button" class="primary-button" type="button">Explore Collections</button>
         </div>
 
         <div class="image-stage house-stage" id="house-stage">
-          <img src="images/house.png" alt="A 3D cutaway dollhouse with several cozy rooms" />
-          <button class="house-hotspot" data-room="bedroom" style="--x: 25%; --y: 36%">
-            <span>Bedroom</span>
-          </button>
-          <button class="house-hotspot" data-room="bathroom" style="--x: 79%; --y: 35%">
-            <span>Bathroom</span>
-          </button>
-          <button class="house-hotspot" data-room="gym" style="--x: 80%; --y: 70%">
-            <span>Gym</span>
-          </button>
-          <button class="house-hotspot" data-room="closet" style="--x: 51%; --y: 30%">
-            <span>Closet</span>
-          </button>
-          <button class="house-hotspot" data-room="office" style="--x: 18%; --y: 70%">
-            <span>Office</span>
-          </button>
+          <div class="house-map">
+            <img src="images/house.png" alt="A 3D cutaway dollhouse with several cozy rooms" />
+            <button class="house-hotspot" data-room="bedroom" style="--x: 32%; --y: 38%">
+              <span>Bedroom</span>
+            </button>
+            <button class="house-hotspot" data-room="bathroom" style="--x: 72%; --y: 38%">
+              <span>Bathroom</span>
+            </button>
+            <button class="house-hotspot" data-room="gym" style="--x: 71%; --y: 61%">
+              <span>Gym</span>
+            </button>
+            <button class="house-hotspot" data-room="closet" style="--x: 53%; --y: 35%">
+              <span>Closet</span>
+            </button>
+            <button class="house-hotspot" data-room="office" style="--x: 30%; --y: 60%">
+              <span>Office</span>
+            </button>
+          </div>
         </div>
       </section>
 
@@ -50,8 +53,8 @@
           <button id="back-button" class="secondary-button" type="button">Back to Home</button>
           <div>
             <h2 id="room-title">BEDROOM</h2>
-            <p>Click on each Smiski to learn more about its personality</p>
-            <span id="room-badge" class="room-badge">0 / 6 Found</span>
+            <p>Click each Smiski to preview the collection and visit the official series page</p>
+            <span id="room-badge" class="room-badge">Bed Series</span>
           </div>
         </div>
 
@@ -67,19 +70,24 @@
     <div id="popup-overlay" class="popup-overlay" hidden>
       <article class="popup-card" role="dialog" aria-modal="true" aria-labelledby="popup-title">
         <button id="close-popup" class="close-button" type="button" aria-label="Close popup">x</button>
-        <p id="popup-kicker" class="popup-kicker">Smiski Profile</p>
+        <p id="popup-kicker" class="popup-kicker">Smiski Series</p>
         <h3 id="popup-title">Smiski</h3>
         <p id="popup-description"></p>
         <dl>
+          <div>
+            <dt>Official Series</dt>
+            <dd id="popup-series"></dd>
+          </div>
           <div>
             <dt>Personality</dt>
             <dd id="popup-personality"></dd>
           </div>
           <div>
-            <dt>Favorite Spot</dt>
+            <dt>Display Spot</dt>
             <dd id="popup-spot"></dd>
           </div>
         </dl>
+        <a id="popup-link" class="product-link" href="#" target="_blank" rel="noopener">View Official Series</a>
       </article>
     </div>
 

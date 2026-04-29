@@ -3,6 +3,8 @@
 const rooms = {
   bedroom: {
     title: "BEDROOM",
+    seriesName: "Bed Series",
+    seriesUrl: "https://smiski.com/e/products/bed-series/",
     image: "images/bedroom.png",
     alt: "A cozy bedroom filled with hidden Smiski characters",
     hotspots: [
@@ -76,6 +78,8 @@ const rooms = {
   },
   bathroom: {
     title: "BATHROOM",
+    seriesName: "Bath Series",
+    seriesUrl: "https://smiski.com/e/products/bath-series/",
     image: "images/bathroom.png",
     alt: "A bright bathroom filled with hidden blue Smiski characters",
     hotspots: [
@@ -149,6 +153,8 @@ const rooms = {
   },
   gym: {
     title: "GYM",
+    seriesName: "Exercising Series",
+    seriesUrl: "https://smiski.com/e/products/exercising-series/",
     image: "images/gym.png",
     alt: "A home gym filled with active Smiski characters",
     hotspots: [
@@ -222,6 +228,8 @@ const rooms = {
   },
   closet: {
     title: "CLOSET",
+    seriesName: "Dressing Series",
+    seriesUrl: "https://smiski.com/e/products/dressing-series/",
     image: "images/closet.png",
     alt: "A warm walk-in closet filled with hidden Smiski characters",
     hotspots: [
@@ -293,6 +301,103 @@ const rooms = {
       },
     ],
   },
+  office: {
+    title: "OFFICE",
+    seriesName: "Work Series",
+    seriesUrl: "https://smiski.com/e/products/work-series/",
+    image: "images/office.png",
+    alt: "A cozy home office filled with hidden Smiski characters",
+    hotspots: [
+      {
+        id: "plant-meeting",
+        x: 6.5,
+        y: 79,
+        width: 8,
+        height: 18,
+        name: "Plant Meeting",
+        description: "This serious Smiski attends every office meeting from beside the plant.",
+        personality: "Focused, quiet, and dependable",
+        favoriteSpot: "The left corner by the plant",
+      },
+      {
+        id: "team-listener",
+        x: 14,
+        y: 80,
+        width: 8,
+        height: 18,
+        name: "Team Listener",
+        description: "A thoughtful Smiski who nods along and remembers every tiny detail.",
+        personality: "Attentive, gentle, and supportive",
+        favoriteSpot: "With the office floor team",
+      },
+      {
+        id: "idea-keeper",
+        x: 20.5,
+        y: 80,
+        width: 8,
+        height: 18,
+        name: "Idea Keeper",
+        description: "This Smiski guards unfinished ideas until they are ready to become plans.",
+        personality: "Patient, clever, and observant",
+        favoriteSpot: "Beside the desk cabinet",
+      },
+      {
+        id: "desk-waver",
+        x: 28,
+        y: 54,
+        width: 9,
+        height: 18,
+        name: "Desk Waver",
+        description: "A friendly Smiski who cheers on every email, essay, and late-night project.",
+        personality: "Encouraging, bright, and helpful",
+        favoriteSpot: "On the desktop",
+      },
+      {
+        id: "laptop-learner",
+        x: 61,
+        y: 58,
+        width: 9,
+        height: 15,
+        name: "Laptop Learner",
+        description: "This Smiski likes sitting near the laptop and pretending to understand spreadsheets.",
+        personality: "Curious, studious, and easily distracted",
+        favoriteSpot: "Next to the desk organizer",
+      },
+      {
+        id: "shelf-thinker",
+        x: 76.5,
+        y: 46,
+        width: 9,
+        height: 16,
+        name: "Shelf Thinker",
+        description: "A glowing idea bulb helps this Smiski solve very small office mysteries.",
+        personality: "Inventive, calm, and philosophical",
+        favoriteSpot: "On the bookshelf stack",
+      },
+      {
+        id: "clipboard-runner",
+        x: 73,
+        y: 73,
+        width: 11,
+        height: 17,
+        name: "Clipboard Runner",
+        description: "This Smiski dashes between shelves with urgent notes nobody asked for.",
+        personality: "Busy, earnest, and a little chaotic",
+        favoriteSpot: "Near the filing drawers",
+      },
+      {
+        id: "corner-presenter",
+        x: 84.5,
+        y: 87,
+        width: 10,
+        height: 19,
+        name: "Corner Presenter",
+        description: "A dramatic Smiski who always has one more point to add before the meeting ends.",
+        personality: "Expressive, confident, and playful",
+        favoriteSpot: "The right edge of the rug",
+      },
+    ],
+  },
 };
 
 const homeScreen = document.querySelector("#home-screen");
@@ -310,16 +415,15 @@ const closePopup = document.querySelector("#close-popup");
 const popupKicker = document.querySelector("#popup-kicker");
 const popupTitle = document.querySelector("#popup-title");
 const popupDescription = document.querySelector("#popup-description");
+const popupSeries = document.querySelector("#popup-series");
 const popupPersonality = document.querySelector("#popup-personality");
 const popupSpot = document.querySelector("#popup-spot");
+const popupLink = document.querySelector("#popup-link");
 const modeLabel = document.querySelector("#mode-label");
 const modeToggle = document.querySelector("#mode-toggle");
-const foundCounter = document.querySelector("#found-counter");
 
 let currentMode = getModeFromTime();
 let activeRoomId = "bedroom";
-const discoveredSmiskis = new Set();
-const totalSmiskis = Object.values(rooms).reduce((total, room) => total + room.hotspots.length, 0);
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function getModeFromTime() {
@@ -331,14 +435,18 @@ function applyMode(mode) {
   currentMode = mode;
   document.body.classList.toggle("night-mode", mode === "night");
   modeLabel.textContent = mode === "night" ? "Night Mode" : "Day Mode";
-  modeToggle.textContent = mode === "night" ? "Preview Day" : "Preview Night";
+  modeToggle.setAttribute("aria-pressed", mode === "night");
+  modeToggle.setAttribute("aria-label", mode === "night" ? "Switch to day mode" : "Switch to night mode");
 }
 
 function showHome() {
   closeInfoCard();
+  document.body.classList.add("has-started");
 
   if (!roomScreen.classList.contains("is-active")) {
     homeScreen.classList.add("is-active");
+    homeScreen.classList.remove("intro-mode");
+    homeScreen.classList.add("house-mode");
     return;
   }
 
@@ -347,6 +455,8 @@ function showHome() {
   window.setTimeout(() => {
     roomScreen.classList.remove("is-active", "is-zooming-out", "is-zooming-in");
     homeScreen.classList.add("is-active");
+    homeScreen.classList.remove("intro-mode");
+    homeScreen.classList.add("house-mode");
   }, prefersReducedMotion ? 0 : 240);
 }
 
@@ -376,7 +486,6 @@ function renderRoomHotspots(room) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "room-hotspot";
-    button.classList.toggle("is-found", discoveredSmiskis.has(hotspot.id));
     button.setAttribute("aria-label", `Learn about ${hotspot.name}`);
     button.dataset.label = hotspot.name;
     button.style.setProperty("--x", `${hotspot.x}%`);
@@ -408,26 +517,25 @@ function playDiscoveryBurst(button) {
 }
 
 function showSmiskiCard(hotspot) {
-  discoveredSmiskis.add(hotspot.id);
-  updateFoundCounter();
-  updateRoomBadge(activeRoomId);
-  updateHouseCompletionBadges();
+  const room = rooms[activeRoomId];
 
-  popupKicker.textContent = "Smiski Profile";
+  updateRoomBadge(activeRoomId);
+
+  popupKicker.textContent = room.seriesName;
   popupTitle.textContent = hotspot.name;
   popupDescription.textContent = hotspot.description;
+  popupSeries.textContent = room.seriesName;
   popupPersonality.textContent = hotspot.personality;
   popupSpot.textContent = hotspot.favoriteSpot;
+  popupLink.href = room.seriesUrl;
+  popupLink.textContent = `View ${room.seriesName}`;
   popupOverlay.hidden = false;
-
-  const activeButton = roomHotspots.querySelector(`[aria-label="Learn about ${hotspot.name}"]`);
-  activeButton?.classList.add("is-found");
 }
 
 function showComingSoon(roomName) {
   popupKicker.textContent = "Coming Soon";
   popupTitle.textContent = roomName;
-  popupDescription.textContent = `${roomName} adventures are still being unpacked. Check back soon for more tiny discoveries.`;
+  popupDescription.textContent = `${roomName} products are still being added. Check back soon for more series details.`;
   popupPersonality.textContent = "Mysterious";
   popupSpot.textContent = "Behind a closed door";
   popupOverlay.hidden = false;
@@ -438,7 +546,10 @@ function closeInfoCard() {
 }
 
 startButton.addEventListener("click", () => {
-  houseStage.scrollIntoView({ behavior: "smooth", block: "center" });
+  document.body.classList.add("has-started");
+  homeScreen.classList.remove("intro-mode");
+  homeScreen.classList.add("house-mode");
+  window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
 backButton.addEventListener("click", showHome);
@@ -488,33 +599,10 @@ roomStage.addEventListener("pointerleave", () => {
   roomStage.style.setProperty("--flash-y", "50%");
 });
 
-function updateFoundCounter() {
-  foundCounter.textContent = `${discoveredSmiskis.size} / ${totalSmiskis} Smiskis discovered`;
-}
-
-function getRoomFoundCount(roomId) {
-  return rooms[roomId].hotspots.filter((hotspot) => discoveredSmiskis.has(hotspot.id)).length;
-}
-
 function updateRoomBadge(roomId) {
   const room = rooms[roomId];
-  const foundCount = getRoomFoundCount(roomId);
-  const isComplete = foundCount === room.hotspots.length;
-
-  roomBadge.textContent = isComplete ? `${room.title} Complete` : `${foundCount} / ${room.hotspots.length} Found`;
-  roomBadge.classList.toggle("is-complete", isComplete);
-}
-
-function updateHouseCompletionBadges() {
-  document.querySelectorAll(".house-hotspot").forEach((button) => {
-    const roomId = button.dataset.room;
-    if (!rooms[roomId]) return;
-
-    const isComplete = getRoomFoundCount(roomId) === rooms[roomId].hotspots.length;
-    button.classList.toggle("is-complete", isComplete);
-  });
+  roomBadge.textContent = room.seriesName;
+  roomBadge.classList.remove("is-complete");
 }
 
 applyMode(currentMode);
-updateFoundCounter();
-updateHouseCompletionBadges();
