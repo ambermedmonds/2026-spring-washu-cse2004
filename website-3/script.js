@@ -1,534 +1,520 @@
-const state = {
-  activeZone: null,
-  discovered: new Set(),
-  lampOn: true,
-  reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  lastPointerTime: 0,
-  lastPointerX: 0,
-  lastPointerY: 0,
+// All room information lives in this object so the page can render dynamically.
+// Each hotspot's x and y values mark the Smiski's belly point.
+const rooms = {
+  bedroom: {
+    title: "BEDROOM",
+    image: "images/bedroom.png",
+    alt: "A cozy bedroom filled with hidden Smiski characters",
+    hotspots: [
+      {
+        id: "sleepy-reader",
+        x: 30.2,
+        y: 52.1,
+        width: 9,
+        height: 19,
+        name: "Sleepy Reader",
+        description: "This Smiski likes quiet nights, soft pillows, and books with tiny mysteries.",
+        personality: "Calm, thoughtful, and a little shy",
+        favoriteSpot: "On the left side of the bed",
+      },
+      {
+        id: "pillow-napper",
+        x: 48.6,
+        y: 45.9,
+        width: 14,
+        height: 10,
+        name: "Pillow Napper",
+        description: "A dreamy Smiski who believes every blanket is a perfect hiding place.",
+        personality: "Sleepy, sweet, and gentle",
+        favoriteSpot: "Between the bedroom pillows",
+      },
+      {
+        id: "rug-reader",
+        x: 47.2,
+        y: 74.2,
+        width: 9,
+        height: 16,
+        name: "Rug Reader",
+        description: "This little friend studies picture books while guarding the softest rug.",
+        personality: "Curious, focused, and loyal",
+        favoriteSpot: "The round rug by the bed",
+      },
+      {
+        id: "shoe-hider",
+        x: 14.3,
+        y: 77.3,
+        width: 10,
+        height: 20,
+        name: "Shoe Hider",
+        description: "A bashful Smiski who hides near slippers whenever the room gets busy.",
+        personality: "Nervous, tender, and observant",
+        favoriteSpot: "Beside the tiny house shoes",
+      },
+      {
+        id: "door-dreamer",
+        x: 72.2,
+        y: 48.5,
+        width: 8,
+        height: 22,
+        name: "Door Dreamer",
+        description: "This Smiski waits by the doorway, wondering what adventure comes next.",
+        personality: "Hopeful, dramatic, and patient",
+        favoriteSpot: "Near the closet doorway",
+      },
+      {
+        id: "floor-lounger",
+        x: 67,
+        y: 77,
+        width: 14,
+        height: 11,
+        name: "Floor Lounger",
+        description: "A relaxed Smiski who turns every floorboard into a vacation spot.",
+        personality: "Easygoing, playful, and mellow",
+        favoriteSpot: "The open wooden floor",
+      },
+    ],
+  },
+  bathroom: {
+    title: "BATHROOM",
+    image: "images/bathroom.png",
+    alt: "A bright bathroom filled with hidden blue Smiski characters",
+    hotspots: [
+      {
+        id: "shower-thinker",
+        x: 14,
+        y: 53,
+        width: 10,
+        height: 21,
+        name: "Shower Thinker",
+        description: "This Smiski gets its best ideas while listening to gentle water sounds.",
+        personality: "Puzzled, poetic, and careful",
+        favoriteSpot: "Inside the glass shower",
+      },
+      {
+        id: "glass-peeker",
+        x: 39,
+        y: 54,
+        width: 9,
+        height: 22,
+        name: "Glass Peeker",
+        description: "A shy Smiski who checks whether bath time is safe before stepping out.",
+        personality: "Timid, watchful, and polite",
+        favoriteSpot: "Behind the shower door",
+      },
+      {
+        id: "bath-mat-buddy",
+        x: 50,
+        y: 68,
+        width: 12,
+        height: 17,
+        name: "Bath Mat Buddy",
+        description: "This Smiski sits exactly where the floor is warmest and refuses to move.",
+        personality: "Steady, cozy, and practical",
+        favoriteSpot: "The bath mat",
+      },
+      {
+        id: "tiny-helper",
+        x: 72,
+        y: 73,
+        width: 16,
+        height: 18,
+        name: "Tiny Helper",
+        description: "A caring pair that reminds everyone to wash up and slow down.",
+        personality: "Helpful, earnest, and kind",
+        favoriteSpot: "In front of the vanity",
+      },
+      {
+        id: "toilet-waver",
+        x: 84,
+        y: 60,
+        width: 9,
+        height: 18,
+        name: "Toilet Waver",
+        description: "This Smiski greets visitors from the most unexpected seat in the room.",
+        personality: "Friendly, surprised, and bold",
+        favoriteSpot: "On top of the toilet",
+      },
+      {
+        id: "corner-peeker",
+        x: 98,
+        y: 67,
+        width: 5,
+        height: 19,
+        name: "Corner Peeker",
+        description: "Only half visible, this Smiski specializes in dramatic entrances.",
+        personality: "Secretive, silly, and theatrical",
+        favoriteSpot: "The far right wall corner",
+      },
+    ],
+  },
+  gym: {
+    title: "GYM",
+    image: "images/gym.png",
+    alt: "A home gym filled with active Smiski characters",
+    hotspots: [
+      {
+        id: "hula-hero",
+        x: 10,
+        y: 65,
+        width: 12,
+        height: 22,
+        name: "Hula Hero",
+        description: "This Smiski treats cardio like a dance party and never misses a spin.",
+        personality: "Energetic, cheerful, and determined",
+        favoriteSpot: "Beside the leafy plant",
+      },
+      {
+        id: "treadmill-tumbler",
+        x: 28,
+        y: 58,
+        width: 11,
+        height: 18,
+        name: "Treadmill Tumbler",
+        description: "A brave Smiski who prefers sitting on treadmills to running on them.",
+        personality: "Optimistic, wobbly, and brave",
+        favoriteSpot: "The treadmill belt",
+      },
+      {
+        id: "bench-star",
+        x: 45,
+        y: 65,
+        width: 17,
+        height: 16,
+        name: "Bench Star",
+        description: "This Smiski has perfected one very dramatic crunch and is proud of it.",
+        personality: "Confident, goofy, and theatrical",
+        favoriteSpot: "The workout bench",
+      },
+      {
+        id: "barbell-buddy",
+        x: 64,
+        y: 64,
+        width: 10,
+        height: 18,
+        name: "Barbell Buddy",
+        description: "A tiny lifter with huge ambition and very careful form.",
+        personality: "Focused, serious, and encouraging",
+        favoriteSpot: "Near the green barbell",
+      },
+      {
+        id: "balance-ball",
+        x: 88,
+        y: 64,
+        width: 11,
+        height: 17,
+        name: "Balance Ball",
+        description: "This Smiski has found the roundest throne in the entire gym.",
+        personality: "Proud, balanced, and quietly funny",
+        favoriteSpot: "On the exercise ball",
+      },
+      {
+        id: "mat-meditator",
+        x: 75,
+        y: 82,
+        width: 12,
+        height: 15,
+        name: "Mat Meditator",
+        description: "A peaceful Smiski who believes stretching counts as an adventure.",
+        personality: "Gentle, patient, and reflective",
+        favoriteSpot: "The green yoga mat",
+      },
+    ],
+  },
+  closet: {
+    title: "CLOSET",
+    image: "images/closet.png",
+    alt: "A warm walk-in closet filled with hidden Smiski characters",
+    hotspots: [
+      {
+        id: "shelf-scout",
+        x: 16.5,
+        y: 72,
+        width: 10,
+        height: 22,
+        name: "Shelf Scout",
+        description: "This Smiski quietly patrols the folded sweaters and checks every shoe twice.",
+        personality: "Careful, neat, and watchful",
+        favoriteSpot: "Beside the low shoe shelf",
+      },
+      {
+        id: "hoodie-hideout",
+        x: 39.5,
+        y: 65,
+        width: 15,
+        height: 17,
+        name: "Hoodie Hideout",
+        description: "A cozy Smiski who believes oversized hoodies are basically portable bedrooms.",
+        personality: "Snuggly, dramatic, and warm-hearted",
+        favoriteSpot: "Inside the green hoodie",
+      },
+      {
+        id: "pants-planner",
+        x: 52.5,
+        y: 62,
+        width: 10,
+        height: 22,
+        name: "Pants Planner",
+        description: "This Smiski takes outfit choices very seriously and always stands ready.",
+        personality: "Organized, serious, and quietly proud",
+        favoriteSpot: "In front of the shoe cubbies",
+      },
+      {
+        id: "sock-sitter",
+        x: 72,
+        y: 68,
+        width: 12,
+        height: 18,
+        name: "Sock Sitter",
+        description: "A patient Smiski who can spend an entire afternoon matching one perfect sock.",
+        personality: "Patient, practical, and a little puzzled",
+        favoriteSpot: "By the closet door",
+      },
+      {
+        id: "hanger-hugger",
+        x: 87.5,
+        y: 70,
+        width: 11,
+        height: 22,
+        name: "Hanger Hugger",
+        description: "This Smiski clings to soft clothes and keeps the hangers company.",
+        personality: "Affectionate, shy, and loyal",
+        favoriteSpot: "Under the hanging shirts",
+      },
+      {
+        id: "rug-recliner",
+        x: 74,
+        y: 82,
+        width: 16,
+        height: 13,
+        name: "Rug Recliner",
+        description: "A relaxed Smiski who turns the closet rug into a tiny lounge.",
+        personality: "Mellow, silly, and unbothered",
+        favoriteSpot: "On the round closet rug",
+      },
+    ],
+  },
 };
 
-const scene = document.getElementById("room-scene");
-const hero = document.getElementById("hero");
-const startButton = document.getElementById("start-exploring");
-const zones = document.querySelectorAll(".zone");
-const glowkins = document.querySelectorAll(".glowkin");
-const drawerObject = document.getElementById("drawer-object");
+const homeScreen = document.querySelector("#home-screen");
+const roomScreen = document.querySelector("#room-screen");
+const startButton = document.querySelector("#start-button");
+const backButton = document.querySelector("#back-button");
+const houseStage = document.querySelector("#house-stage");
+const roomStage = document.querySelector("#room-stage");
+const roomTitle = document.querySelector("#room-title");
+const roomImage = document.querySelector("#room-image");
+const roomHotspots = document.querySelector("#room-hotspots");
+const roomBadge = document.querySelector("#room-badge");
+const popupOverlay = document.querySelector("#popup-overlay");
+const closePopup = document.querySelector("#close-popup");
+const popupKicker = document.querySelector("#popup-kicker");
+const popupTitle = document.querySelector("#popup-title");
+const popupDescription = document.querySelector("#popup-description");
+const popupPersonality = document.querySelector("#popup-personality");
+const popupSpot = document.querySelector("#popup-spot");
+const modeLabel = document.querySelector("#mode-label");
+const modeToggle = document.querySelector("#mode-toggle");
+const foundCounter = document.querySelector("#found-counter");
 
-const infoCard = {
-  wrap: document.getElementById("info-card"),
-  name: document.getElementById("info-name"),
-  trait: document.getElementById("info-trait"),
-  spot: document.getElementById("info-spot"),
-  line: document.getElementById("info-line"),
-  close: document.getElementById("close-zone"),
-};
+let currentMode = getModeFromTime();
+let activeRoomId = "bedroom";
+const discoveredSmiskis = new Set();
+const totalSmiskis = Object.values(rooms).reduce((total, room) => total + room.hotspots.length, 0);
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const collectionEls = {
-  drawer: document.getElementById("collection-drawer"),
-  grid: document.getElementById("collection-grid"),
-  counter: document.getElementById("found-counter"),
-  openBtn: document.getElementById("open-collection"),
-  closeBtn: document.getElementById("close-collection"),
-};
-
-const atmoEls = {
-  summary: document.getElementById("atmo-summary"),
-  city: document.getElementById("atmo-city"),
-  time: document.getElementById("atmo-time"),
-  weather: document.getElementById("atmo-weather"),
-};
-
-const lampToggle = document.getElementById("lamp-toggle");
-const flashlight = document.querySelector(".flashlight");
-const dustLayer = document.getElementById("dust-layer");
-const raindrops = document.getElementById("raindrops");
-const plant = document.getElementById("plant-object");
-
-const GLOWKINS = {
-  "nimble-nim": {
-    name: "Nimble Nim",
-    zone: "desk",
-    trait: "Shy, lightning-fast",
-    spot: "Behind stacked notebooks",
-    line: "Nim peeks out while you work, then vanishes if your cursor darts too quickly.",
-    behavior: "hide-fast",
-  },
-  "echo-moss": {
-    name: "Echo Moss",
-    zone: "bookshelf",
-    trait: "Nosy and chatty",
-    spot: "Between old adventure novels",
-    line: "Echo leans out to wave if you hover gently near the shelf.",
-    behavior: "gentle-wave",
-  },
-  "luma-lull": {
-    name: "Luma Lull",
-    zone: "bed",
-    trait: "Sleepy dreamer",
-    spot: "Under the blanket edge",
-    line: "Luma glows brightest when the room lamp is off and the night feels quiet.",
-    behavior: "lamp-glow",
-  },
-  "pip-puffle": {
-    name: "Pip Puffle",
-    zone: "plant",
-    trait: "Dramatic performer",
-    spot: "Inside the plant leaves",
-    line: "Pip only appears after a calm pause, like waiting for the perfect entrance.",
-    behavior: "delayed-appear",
-  },
-  "vela-guard": {
-    name: "Vela Guard",
-    zone: "drawer",
-    trait: "Tiny guardian",
-    spot: "Behind the half-open drawer",
-    line: "Vela peeks from behind storage boxes and keeps tiny secrets safe.",
-    behavior: "peek-drawer",
-  },
-};
-
-const COLLECTION_ORDER = ["nimble-nim", "echo-moss", "luma-lull", "pip-puffle", "vela-guard"];
-
-function init() {
-  // Core boot sequence.
-  initializeSceneState();
-  buildDust();
-  buildRain();
-  bindCoreEvents();
-  renderCollection();
-  loadAtmosphere();
-  runIntroMotion();
+function getModeFromTime() {
+  const hour = new Date().getHours();
+  return hour >= 7 && hour < 18 ? "day" : "night";
 }
 
-function initializeSceneState() {
-  document.body.dataset.lamp = "on";
-
-  // Keep Glowkins hidden until discovery flow starts.
-  glowkins.forEach((el) => {
-    el.classList.remove("is-visible");
-  });
+function applyMode(mode) {
+  currentMode = mode;
+  document.body.classList.toggle("night-mode", mode === "night");
+  modeLabel.textContent = mode === "night" ? "Night Mode" : "Day Mode";
+  modeToggle.textContent = mode === "night" ? "Preview Day" : "Preview Night";
 }
 
-function buildDust() {
-  if (state.reducedMotion || !dustLayer) return;
+function showHome() {
+  closeInfoCard();
 
-  const count = 34;
-  const fragment = document.createDocumentFragment();
-
-  for (let i = 0; i < count; i += 1) {
-    const dot = document.createElement("span");
-    dot.className = "dust";
-    dot.style.setProperty("--size", `${Math.random() * 2.8 + 1.2}px`);
-    dot.style.setProperty("--x", `${Math.random() * 100}%`);
-    dot.style.setProperty("--y", `${Math.random() * 100}%`);
-    dot.style.setProperty("--dur", `${Math.random() * 9 + 7}s`);
-    dot.style.setProperty("--drift", `${(Math.random() - 0.5) * 26}px`);
-    dot.style.animationDelay = `${Math.random() * -10}s`;
-    fragment.appendChild(dot);
+  if (!roomScreen.classList.contains("is-active")) {
+    homeScreen.classList.add("is-active");
+    return;
   }
 
-  dustLayer.appendChild(fragment);
+  roomScreen.classList.add("is-zooming-out");
+
+  window.setTimeout(() => {
+    roomScreen.classList.remove("is-active", "is-zooming-out", "is-zooming-in");
+    homeScreen.classList.add("is-active");
+  }, prefersReducedMotion ? 0 : 240);
 }
 
-function buildRain() {
-  if (!raindrops) return;
+function showRoom(roomId) {
+  const room = rooms[roomId];
+  if (!room) return;
 
-  const fragment = document.createDocumentFragment();
-  for (let i = 0; i < 28; i += 1) {
-    const drop = document.createElement("span");
-    drop.className = "raindrop";
-    drop.style.setProperty("--x", `${Math.random() * 100}%`);
-    drop.style.setProperty("--h", `${Math.random() * 30 + 18}px`);
-    drop.style.setProperty("--d", `${Math.random() * 1.4 + 1.1}s`);
-    drop.style.setProperty("--delay", `${Math.random() * -2}s`);
-    fragment.appendChild(drop);
-  }
+  activeRoomId = roomId;
+  roomTitle.textContent = room.title;
+  roomImage.src = room.image;
+  roomImage.alt = room.alt;
+  renderRoomHotspots(room);
+  updateRoomBadge(roomId);
 
-  raindrops.appendChild(fragment);
+  homeScreen.classList.remove("is-active");
+  roomScreen.classList.add("is-active");
+  roomScreen.classList.remove("is-zooming-in", "is-zooming-out");
+  void roomScreen.offsetWidth;
+  roomScreen.classList.add("is-zooming-in");
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-function bindCoreEvents() {
-  startButton?.addEventListener("click", () => {
-    document.getElementById("room-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
+function renderRoomHotspots(room) {
+  roomHotspots.innerHTML = "";
 
-  zones.forEach((zoneButton) => {
-    zoneButton.addEventListener("click", () => {
-      const zoneId = zoneButton.dataset.zone;
-      if (!zoneId) return;
-      activateZone(zoneId, zoneButton);
+  room.hotspots.forEach((hotspot) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "room-hotspot";
+    button.classList.toggle("is-found", discoveredSmiskis.has(hotspot.id));
+    button.setAttribute("aria-label", `Learn about ${hotspot.name}`);
+    button.dataset.label = hotspot.name;
+    button.style.setProperty("--x", `${hotspot.x}%`);
+    button.style.setProperty("--y", `${hotspot.y}%`);
+    button.style.setProperty("--w", `${hotspot.width}%`);
+    button.style.setProperty("--h", `${hotspot.height}%`);
+
+    button.addEventListener("click", () => {
+      playDiscoveryBurst(button);
+      window.setTimeout(() => showSmiskiCard(hotspot), prefersReducedMotion ? 0 : 220);
     });
-  });
-
-  infoCard.close.addEventListener("click", resetZoneView);
-
-  lampToggle.addEventListener("click", toggleLamp);
-
-  collectionEls.openBtn.addEventListener("click", () => {
-    collectionEls.drawer.classList.add("is-open");
-  });
-
-  collectionEls.closeBtn.addEventListener("click", () => {
-    collectionEls.drawer.classList.remove("is-open");
-  });
-
-  // Flashlight and subtle scene parallax.
-  document.addEventListener("pointermove", onPointerMove);
-  scene?.addEventListener("pointerleave", () => {
-    document.documentElement.style.setProperty("--scene-parallax-x", "0px");
-    document.documentElement.style.setProperty("--scene-parallax-y", "0px");
-  });
-
-  // Book movement microinteraction support.
-  document.querySelector(".bookshelf-object")?.addEventListener("mouseenter", () => {
-    gsap.to(".shelf-books i", {
-      y: (index) => (index % 2 === 0 ? -5 : -2),
-      rotation: (index) => (index % 2 === 0 ? -4 : 3),
-      duration: 0.25,
-      stagger: 0.03,
-      ease: "power2.out",
-    });
-  });
-
-  document.querySelector(".bookshelf-object")?.addEventListener("mouseleave", () => {
-    gsap.to(".shelf-books i", {
-      y: 0,
-      rotation: 0,
-      duration: 0.3,
-      stagger: 0.02,
-      ease: "power2.out",
-    });
-  });
-
-  // Drawer interaction.
-  drawerObject?.addEventListener("click", () => {
-    drawerObject.classList.toggle("is-open");
-  });
-
-  // Plant sway intensifies on hover.
-  plant?.addEventListener("mouseenter", () => {
-    document.body.dataset.weather = document.body.dataset.weather === "windy" ? "windy" : document.body.dataset.weather;
+    roomHotspots.appendChild(button);
   });
 }
 
-function onPointerMove(event) {
-  const x = event.clientX;
-  const y = event.clientY;
+function playDiscoveryBurst(button) {
+  if (prefersReducedMotion) return;
 
-  document.documentElement.style.setProperty("--flash-x", `${x}px`);
-  document.documentElement.style.setProperty("--flash-y", `${y}px`);
+  button.querySelectorAll(".sparkle-burst").forEach((sparkle) => sparkle.remove());
 
-  if (state.reducedMotion || !scene) return;
-
-  const rect = scene.getBoundingClientRect();
-  if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) return;
-
-  const dx = ((x - rect.left) / rect.width - 0.5) * 10;
-  const dy = ((y - rect.top) / rect.height - 0.5) * 10;
-  document.documentElement.style.setProperty("--scene-parallax-x", `${dx.toFixed(2)}px`);
-  document.documentElement.style.setProperty("--scene-parallax-y", `${dy.toFixed(2)}px`);
-
-  // Nimble Nim hides if cursor speed spikes.
-  const now = performance.now();
-  const dt = now - state.lastPointerTime;
-  if (dt > 0) {
-    const dist = Math.hypot(x - state.lastPointerX, y - state.lastPointerY);
-    const speed = dist / dt;
-    const nim = document.querySelector(".glowkin-nim");
-    if (nim && nim.classList.contains("is-visible")) {
-      if (speed > 1.6) {
-        nim.classList.add("is-hidden-fast");
-      } else {
-        nim.classList.remove("is-hidden-fast");
-      }
-    }
-  }
-
-  state.lastPointerTime = now;
-  state.lastPointerX = x;
-  state.lastPointerY = y;
-}
-
-// Zone + Glowkin discovery system.
-function activateZone(zoneId, zoneButton) {
-  state.activeZone = zoneId;
-
-  const glowkinEl = document.querySelector(`.glowkin[data-zone="${zoneId}"]`);
-  if (!glowkinEl) return;
-
-  const profile = GLOWKINS[glowkinEl.dataset.glowkin];
-  if (!profile) return;
-
-  // Zoom target anchored on selected zone.
-  const zoneRect = zoneButton.getBoundingClientRect();
-  const sceneRect = scene.getBoundingClientRect();
-  const centerX = ((zoneRect.left + zoneRect.width / 2 - sceneRect.left) / sceneRect.width) * 100;
-  const centerY = ((zoneRect.top + zoneRect.height / 2 - sceneRect.top) / sceneRect.height) * 100;
-
-  document.documentElement.style.setProperty("--zoom-scale", "1.18");
-  document.documentElement.style.setProperty("--zoom-x", `${centerX}%`);
-  document.documentElement.style.setProperty("--zoom-y", `${centerY}%`);
-
-  revealGlowkin(glowkinEl, profile);
-  updateInfoCard(profile);
-
-  state.discovered.add(glowkinEl.dataset.glowkin);
-  renderCollection();
-}
-
-function revealGlowkin(glowkinEl, profile) {
-  // Reset all other Glowkins for clear focus.
-  glowkins.forEach((el) => el.classList.remove("is-visible", "glowkin-waving"));
-
-  if (profile.behavior === "delayed-appear") {
-    glowkinEl.classList.remove("is-visible");
-    setTimeout(() => {
-      if (state.activeZone === profile.zone) {
-        glowkinEl.classList.add("is-visible");
-      }
-    }, 900);
-  } else {
-    glowkinEl.classList.add("is-visible");
-  }
-
-  if (profile.behavior === "gentle-wave") {
-    if (!glowkinEl.dataset.gentleBound) {
-      let lastX = null;
-      let lastY = null;
-      let lastT = null;
-
-      glowkinEl.addEventListener("pointermove", (event) => {
-        const now = performance.now();
-        if (lastX === null || lastY === null || lastT === null) {
-          lastX = event.clientX;
-          lastY = event.clientY;
-          lastT = now;
-          return;
-        }
-
-        const dt = now - lastT;
-        const dist = Math.hypot(event.clientX - lastX, event.clientY - lastY);
-        const speed = dt > 0 ? dist / dt : 0;
-
-        // Only wave for slow, gentle hover movement.
-        if (speed < 0.22 && !glowkinEl.classList.contains("glowkin-waving")) {
-          glowkinEl.classList.add("glowkin-waving");
-          setTimeout(() => glowkinEl.classList.remove("glowkin-waving"), 850);
-        }
-
-        lastX = event.clientX;
-        lastY = event.clientY;
-        lastT = now;
-      });
-
-      glowkinEl.dataset.gentleBound = "true";
-    }
-  }
-
-  if (profile.behavior === "peek-drawer") {
-    drawerObject?.classList.add("is-open");
-    if (typeof gsap !== "undefined") {
-      gsap.to(glowkinEl, { x: 10, duration: 0.4, yoyo: true, repeat: 1, ease: "power1.inOut" });
-    }
+  for (let i = 0; i < 10; i += 1) {
+    const sparkle = document.createElement("span");
+    sparkle.className = "sparkle-burst";
+    sparkle.style.setProperty("--angle", `${i * 36}deg`);
+    sparkle.style.animationDelay = `${i * 12}ms`;
+    button.appendChild(sparkle);
+    sparkle.addEventListener("animationend", () => sparkle.remove());
   }
 }
 
-function updateInfoCard(profile) {
-  infoCard.name.textContent = profile.name;
-  infoCard.trait.textContent = profile.trait;
-  infoCard.spot.textContent = profile.spot;
-  infoCard.line.textContent = profile.line;
+function showSmiskiCard(hotspot) {
+  discoveredSmiskis.add(hotspot.id);
+  updateFoundCounter();
+  updateRoomBadge(activeRoomId);
+  updateHouseCompletionBadges();
+
+  popupKicker.textContent = "Smiski Profile";
+  popupTitle.textContent = hotspot.name;
+  popupDescription.textContent = hotspot.description;
+  popupPersonality.textContent = hotspot.personality;
+  popupSpot.textContent = hotspot.favoriteSpot;
+  popupOverlay.hidden = false;
+
+  const activeButton = roomHotspots.querySelector(`[aria-label="Learn about ${hotspot.name}"]`);
+  activeButton?.classList.add("is-found");
 }
 
-function resetZoneView() {
-  state.activeZone = null;
-  document.documentElement.style.setProperty("--zoom-scale", "1");
-  glowkins.forEach((el) => el.classList.remove("is-visible", "is-hidden-fast", "glowkin-waving"));
-  drawerObject?.classList.remove("is-open");
-  infoCard.name.textContent = "Select a zone";
-  infoCard.trait.textContent = "—";
-  infoCard.spot.textContent = "—";
-  infoCard.line.textContent = "Click a room zone to discover who lives there.";
+function showComingSoon(roomName) {
+  popupKicker.textContent = "Coming Soon";
+  popupTitle.textContent = roomName;
+  popupDescription.textContent = `${roomName} adventures are still being unpacked. Check back soon for more tiny discoveries.`;
+  popupPersonality.textContent = "Mysterious";
+  popupSpot.textContent = "Behind a closed door";
+  popupOverlay.hidden = false;
 }
 
-function toggleLamp() {
-  state.lampOn = !state.lampOn;
-  document.body.dataset.lamp = state.lampOn ? "on" : "off";
-  lampToggle.textContent = state.lampOn ? "Lamp: On" : "Lamp: Off";
-  lampToggle.setAttribute("aria-pressed", String(state.lampOn));
+function closeInfoCard() {
+  popupOverlay.hidden = true;
 }
 
-// Collection drawer system.
-function renderCollection() {
-  collectionEls.grid.innerHTML = "";
-  const fragment = document.createDocumentFragment();
+startButton.addEventListener("click", () => {
+  houseStage.scrollIntoView({ behavior: "smooth", block: "center" });
+});
 
-  COLLECTION_ORDER.forEach((id) => {
-    const profile = GLOWKINS[id];
-    const found = state.discovered.has(id);
+backButton.addEventListener("click", showHome);
+closePopup.addEventListener("click", closeInfoCard);
 
-    const card = document.createElement("article");
-    card.className = `collection-item ${found ? "" : "locked"}`.trim();
+popupOverlay.addEventListener("click", (event) => {
+  if (event.target === popupOverlay) {
+    closeInfoCard();
+  }
+});
 
-    card.innerHTML = `
-      <h3>${found ? profile.name : "Unknown Glowkin"}</h3>
-      <p>${found ? profile.trait : "Still hiding in the room."}</p>
-      <span class="status">${found ? "Discovered" : "Locked"}</span>
-    `;
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeInfoCard();
+  }
+});
 
-    fragment.appendChild(card);
-  });
+document.querySelectorAll(".house-hotspot").forEach((button) => {
+  button.addEventListener("click", () => {
+    const roomId = button.dataset.room;
 
-  collectionEls.grid.appendChild(fragment);
-  collectionEls.counter.textContent = `${state.discovered.size} / ${COLLECTION_ORDER.length} discovered`;
-}
-
-// Atmosphere API integration (Open-Meteo).
-async function loadAtmosphere() {
-  const defaultCity = {
-    name: "St. Louis",
-    latitude: 38.627,
-    longitude: -90.1994,
-    timezone: "America/Chicago",
-  };
-
-  atmoEls.city.textContent = defaultCity.name;
-
-  const endpoint =
-    `https://api.open-meteo.com/v1/forecast?latitude=${defaultCity.latitude}` +
-    `&longitude=${defaultCity.longitude}` +
-    "&current=temperature_2m,weather_code,wind_speed_10m,cloud_cover,is_day" +
-    `&timezone=${encodeURIComponent(defaultCity.timezone)}`;
-
-  try {
-    const response = await fetch(endpoint, { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error(`Weather request failed: ${response.status}`);
+    if (rooms[roomId]) {
+      showRoom(roomId);
+      return;
     }
 
-    const data = await response.json();
-    const current = data.current || {};
-
-    const weatherCode = Number(current.weather_code ?? -1);
-    const weatherType = classifyWeather(weatherCode, Number(current.wind_speed_10m ?? 0));
-    const phase = classifyTimePhase(String(current.time || ""), Number(current.is_day ?? 1));
-    const weatherText = readableWeather(weatherCode, weatherType);
-
-    document.body.dataset.weather = weatherType;
-    document.body.dataset.phase = phase;
-
-    // Weather mood changes.
-    raindrops.style.opacity = weatherType === "rain" ? "0.9" : "0";
-
-    atmoEls.weather.textContent = weatherText;
-    atmoEls.time.textContent = formatClock(String(current.time || ""));
-    atmoEls.summary.textContent = buildAtmosphereLine({
-      weatherType,
-      phase,
-      wind: Number(current.wind_speed_10m ?? 0),
-      cloud: Number(current.cloud_cover ?? 0),
-      temp: Number(current.temperature_2m ?? 0),
-    });
-  } catch (error) {
-    atmoEls.summary.textContent =
-      "Weather feed is resting. Running a calm default night scene with soft lamp glow.";
-    atmoEls.time.textContent = `${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
-    atmoEls.weather.textContent = "Cloudy";
-    document.body.dataset.weather = "cloudy";
-    document.body.dataset.phase = "night";
-    console.error(error);
-  }
-}
-
-function classifyWeather(code, windSpeed) {
-  if (windSpeed > 25) return "windy";
-  if ([51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(code)) return "rain";
-  if ([0, 1].includes(code)) return "clear";
-  return "cloudy";
-}
-
-function readableWeather(code, fallback) {
-  const labels = {
-    0: "Clear",
-    1: "Mostly Clear",
-    2: "Partly Cloudy",
-    3: "Overcast",
-    45: "Fog",
-    48: "Dense Fog",
-    51: "Light Drizzle",
-    53: "Drizzle",
-    55: "Heavy Drizzle",
-    61: "Light Rain",
-    63: "Rain",
-    65: "Heavy Rain",
-    80: "Rain Showers",
-    81: "Showers",
-    82: "Heavy Showers",
-    95: "Thunderstorm",
-  };
-
-  return labels[code] || fallback;
-}
-
-function classifyTimePhase(timeString, isDay) {
-  if (!timeString.includes("T")) {
-    return isDay ? "evening" : "night";
-  }
-
-  const hour = Number(timeString.split("T")[1].split(":")[0]);
-  if (hour >= 5 && hour < 8) return "dawn";
-  if (hour >= 18 && hour < 22) return "evening";
-  return "night";
-}
-
-function formatClock(timeString) {
-  if (!timeString.includes("T")) return "--";
-  return `${timeString.split("T")[1].slice(0, 5)}`;
-}
-
-function buildAtmosphereLine({ weatherType, phase, wind, cloud, temp }) {
-  const weatherLine = {
-    rain: "Rain outside deepens shadows and paints the window with drifting drops.",
-    clear: "Clear skies pull in cool moonlight and a crisp glow around corners.",
-    cloudy: "Cloud cover softens contrast for a quiet, muted nighttime mood.",
-    windy: "Windy air makes leaves dance while the room keeps a cozy hush.",
-  }[weatherType];
-
-  const phaseLine = {
-    dawn: "The room is shifting toward dawn tones.",
-    evening: "The room is settling into evening calm.",
-    night: "The room is in deep-night mode.",
-  }[phase];
-
-  return `${weatherLine} ${phaseLine} ${Math.round(temp)}\u00b0C, wind ${Math.round(wind)} km/h, cloud cover ${Math.round(cloud)}%.`;
-}
-
-function runIntroMotion() {
-  if (state.reducedMotion || typeof gsap === "undefined") return;
-
-  gsap.from(".hero-copy", {
-    y: 28,
-    opacity: 0,
-    duration: 0.85,
-    ease: "power2.out",
+    const roomName = button.textContent.trim().toUpperCase();
+    showComingSoon(roomName);
   });
+});
 
-  gsap.to(".glowkin-peek", {
-    y: -8,
-    duration: 1.8,
-    repeat: -1,
-    yoyo: true,
-    ease: "sine.inOut",
-  });
+modeToggle.addEventListener("click", () => {
+  applyMode(currentMode === "night" ? "day" : "night");
+});
 
-  gsap.to(".room-scene", {
-    boxShadow: "0 20px 50px rgba(163, 176, 232, 0.24)",
-    duration: 2.2,
-    repeat: -1,
-    yoyo: true,
-    ease: "sine.inOut",
+roomStage.addEventListener("pointermove", (event) => {
+  const rect = roomStage.getBoundingClientRect();
+  const x = ((event.clientX - rect.left) / rect.width) * 100;
+  const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+  roomStage.style.setProperty("--flash-x", `${x}%`);
+  roomStage.style.setProperty("--flash-y", `${y}%`);
+});
+
+roomStage.addEventListener("pointerleave", () => {
+  roomStage.style.setProperty("--flash-x", "50%");
+  roomStage.style.setProperty("--flash-y", "50%");
+});
+
+function updateFoundCounter() {
+  foundCounter.textContent = `${discoveredSmiskis.size} / ${totalSmiskis} Smiskis discovered`;
+}
+
+function getRoomFoundCount(roomId) {
+  return rooms[roomId].hotspots.filter((hotspot) => discoveredSmiskis.has(hotspot.id)).length;
+}
+
+function updateRoomBadge(roomId) {
+  const room = rooms[roomId];
+  const foundCount = getRoomFoundCount(roomId);
+  const isComplete = foundCount === room.hotspots.length;
+
+  roomBadge.textContent = isComplete ? `${room.title} Complete` : `${foundCount} / ${room.hotspots.length} Found`;
+  roomBadge.classList.toggle("is-complete", isComplete);
+}
+
+function updateHouseCompletionBadges() {
+  document.querySelectorAll(".house-hotspot").forEach((button) => {
+    const roomId = button.dataset.room;
+    if (!rooms[roomId]) return;
+
+    const isComplete = getRoomFoundCount(roomId) === rooms[roomId].hotspots.length;
+    button.classList.toggle("is-complete", isComplete);
   });
 }
 
-init();
+applyMode(currentMode);
+updateFoundCounter();
+updateHouseCompletionBadges();
