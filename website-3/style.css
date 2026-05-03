@@ -90,6 +90,7 @@ button {
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-left: auto;
   padding: 0;
   transition: opacity 180ms ease, transform 180ms ease;
 }
@@ -109,7 +110,7 @@ body:not(.has-started) .mode-panel {
 .mode-text {
   display: grid;
   gap: 0.12rem;
-  width: 5.35rem;
+  width: clamp(4.8rem, 14vw, 7.4rem);
   line-height: 1;
 }
 
@@ -162,6 +163,8 @@ body.night-mode .saved-launcher {
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 

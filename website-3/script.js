@@ -187,7 +187,7 @@ const rooms = {
         width: 11,
         height: 18,
         name: "SMISKI Doing Crunches",
-        description: "SMISKI is working his ads. Do you think his muffin top is cute?",
+        description: "SMISKI is working his abs. Do you think his muffin top is cute?",
         personality: "Determined, self-conscious, and charmingly committed",
         favoriteSpot: "The treadmill belt",
       },
@@ -353,12 +353,12 @@ const rooms = {
         favoriteSpot: "On the bookshelf stack",
       },
       {
-        id: "on-the-rord",
+        id: "on-the-road",
         x: 73,
         y: 68,
         width: 11,
         height: 17,
-        name: "SMISKI On the Rord",
+        name: "SMISKI On the Road",
         description: "SMISKI hurries to work. He pretends to be an executive although he is often late.",
         personality: "Busy, ambitious, and always rushing",
         favoriteSpot: "Near the filing drawers",
@@ -441,11 +441,17 @@ const legacyProductIds = {
   "desk-waver": "approving",
   "laptop-learner": "researching",
   "shelf-thinker": "good-idea",
-  "clipboard-runner": "on-the-rord",
+  "clipboard-runner": "on-the-road",
+  "on-the-rord": "on-the-road",
   "corner-presenter": "presenting",
 };
-const WEATHER_API_URL = "https://cse2004.com/api/weather?latitude=38.627&longitude=-90.199";
-const DAYLIGHT_API_URL = "https://api.sunrise-sunset.org/json?lat=38.627&lng=-90.199&formatted=0";
+const FALLBACK_LOCATION_QUERY = "St Louis";
+const ST_LOUIS_LOCATION = {
+  latitude: 38.627,
+  longitude: -90.199,
+  label: "St. Louis",
+};
+const LOCATION_DENIED_LABEL = "Location Off";
 const DAYLIGHT_REFRESH_MS = 15 * 60 * 1000;
 const savedProducts = new Set(migrateSavedProducts(JSON.parse(localStorage.getItem("savedSmiskis") || "[]")));
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -453,6 +459,8 @@ const productsById = buildProductIndex();
 let draggedSavedItem = null;
 let didDragSavedItem = false;
 let savedDrawerItemIds = [];
+let userLocation = null;
+let userLocationRequest = null;
 
 function getModeFromTime() {
   const hour = new Date().getHours();
@@ -462,7 +470,6 @@ function getModeFromTime() {
 function applyMode(mode) {
   currentMode = mode;
   document.body.classList.toggle("night-mode", mode === "night");
-  modeLabel.textContent = mode === "night" ? "Night Mode" : "Day Mode";
   modeToggle.setAttribute("aria-pressed", mode === "night");
   modeToggle.setAttribute("aria-label", mode === "night" ? "Switch to day mode" : "Switch to night mode");
 }
@@ -471,6 +478,7 @@ function updateCurrentTime() {
   currentTimeLabel.textContent = new Intl.DateTimeFormat([], {
     hour: "numeric",
     minute: "2-digit",
+    timeZone: userLocation?.timeZone,
   }).format(new Date());
 }
 
@@ -487,30 +495,255 @@ function isBetweenSunriseAndSunset(daylight, currentDate = new Date()) {
 
 async function updateModeFromSunriseSunset() {
   try {
-    const weatherResponse = await fetch(WEATHER_API_URL);
+    const location = await getUserLocation();
+    const weatherUrl =
+      `https://cse2004.com/api/weather?latitude=${encodeURIComponent(location.latitude)}` +
+      `&longitude=${encodeURIComponent(location.longitude)}`;
+    const daylightUrl =
+      `https://api.sunrise-sunset.org/json?lat=${encodeURIComponent(location.latitude)}` +
+      `&lng=${encodeURIComponent(location.longitude)}&formatted=0`;
+    const [weatherResponse, daylightResponse] = await Promise.all([fetch(weatherUrl), fetch(daylightUrl)]);
+    const weather = weatherResponse.ok ? await weatherResponse.json() : null;
+    const daylight = daylightResponse.ok ? await daylightResponse.json() : null;
+    const weatherLocationLabel = getWeatherLocationLabel(weather);
 
-    if (!weatherResponse.ok) {
-      throw new Error("Weather API request failed");
+    if (userLocation.label !== LOCATION_DENIED_LABEL && weatherLocationLabel && weatherLocationLabel !== userLocation.label) {
+      userLocation.label = weatherLocationLabel;
+      modeLabel.textContent = weatherLocationLabel;
     }
 
-    const weather = await weatherResponse.json();
-    const daylightResponse = await fetch(DAYLIGHT_API_URL);
-
-    if (!daylightResponse.ok) {
-      throw new Error("Daylight API request failed");
-    }
-
-    const daylight = await daylightResponse.json();
     const isDaylight = isBetweenSunriseAndSunset(daylight);
 
     if (isDaylight === null) {
+      if (weather?.isDaytime === undefined) {
+        throw new Error("Daylight API request failed");
+      }
+
       applyMode(weather.isDaytime ? "day" : "night");
       return;
     }
 
     applyMode(isDaylight ? "day" : "night");
   } catch (error) {
+    if (!userLocation) {
+      modeLabel.textContent = "Location Unavailable";
+    }
+
     applyMode(getModeFromTime());
+  }
+}
+
+async function getUserLocation() {
+  if (userLocation) {
+    return userLocation;
+  }
+
+  if (!userLocationRequest) {
+    userLocationRequest = resolveUserLocation();
+  }
+
+  userLocation = await userLocationRequest;
+  modeLabel.textContent = userLocation.label;
+  updateCurrentTime();
+  return userLocation;
+}
+
+async function resolveUserLocation() {
+  try {
+    const coords = await getBrowserCoordinates();
+    return await enrichLocation(coords, getNearbyKnownLocationLabel(coords) || formatCoordinateLabel(coords));
+  } catch (error) {
+    const fallbackCoords = await geocodeLocationQuery(FALLBACK_LOCATION_QUERY);
+    return {
+      ...(await enrichLocation(fallbackCoords, ST_LOUIS_LOCATION.label)),
+      label: LOCATION_DENIED_LABEL,
+    };
+  }
+}
+
+function getBrowserCoordinates() {
+  return new Promise((resolve, reject) => {
+    if (!("geolocation" in navigator)) {
+      reject(new Error("Geolocation not supported"));
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+      },
+      reject,
+      {
+        enableHighAccuracy: false,
+        maximumAge: 10 * 60 * 1000,
+        timeout: 8000,
+      }
+    );
+  });
+}
+
+async function geocodeLocationQuery(address) {
+  const response = await fetch(`https://cse2004.com/api/geocode?address=${encodeURIComponent(address)}`);
+
+  if (!response.ok) {
+    throw new Error("Geocode API request failed");
+  }
+
+  const data = await response.json();
+  const firstResult = Array.isArray(data?.results)
+    ? data.results[0]
+    : Array.isArray(data?.data?.results)
+      ? data.data.results[0]
+      : null;
+  const latitude = Number(firstResult?.geometry?.location?.lat ?? firstResult?.lat ?? firstResult?.latitude);
+  const longitude = Number(
+    firstResult?.geometry?.location?.lng ?? firstResult?.lng ?? firstResult?.lon ?? firstResult?.longitude
+  );
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    throw new Error("Could not geocode location");
+  }
+
+  return { latitude, longitude };
+}
+
+async function enrichLocation(coords, fallbackLabel) {
+  const openMeteoLocation = await fetchOpenMeteoLocation(coords);
+  const bigDataLocation = openMeteoLocation?.label ? null : await fetchBigDataCloudLocation(coords);
+  const resolvedLocation = openMeteoLocation?.label ? openMeteoLocation : bigDataLocation;
+  const label = resolvedLocation?.label || fallbackLabel || formatCoordinateLabel(coords);
+  const timeZone = isValidTimeZone(resolvedLocation?.timeZone) ? resolvedLocation.timeZone : undefined;
+
+  return { ...coords, label, timeZone };
+}
+
+async function fetchOpenMeteoLocation(coords) {
+  try {
+    const reverseUrl =
+      `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${encodeURIComponent(coords.latitude)}` +
+      `&longitude=${encodeURIComponent(coords.longitude)}&count=1&language=en&format=json`;
+    const response = await fetch(reverseUrl);
+
+    if (!response.ok) {
+      throw new Error("Reverse geocode request failed");
+    }
+
+    const data = await response.json();
+    const result = data?.results?.[0];
+    const label = getReverseGeocodeLabel(result);
+
+    return {
+      label,
+      timeZone: result?.timezone,
+    };
+  } catch (error) {
+    return null;
+  }
+}
+
+async function fetchBigDataCloudLocation(coords) {
+  try {
+    const reverseUrl =
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(coords.latitude)}` +
+      `&longitude=${encodeURIComponent(coords.longitude)}&localityLanguage=en`;
+    const response = await fetch(reverseUrl);
+
+    if (!response.ok) {
+      throw new Error("Backup reverse geocode request failed");
+    }
+
+    const data = await response.json();
+    const label = getBigDataCloudLocationLabel(data);
+
+    return {
+      label,
+      timeZone: data?.localityInfo?.informative?.find((item) => item?.description === "time zone")?.name,
+    };
+  } catch (error) {
+    return null;
+  }
+}
+
+function getReverseGeocodeLabel(result) {
+  if (!result) {
+    return "";
+  }
+
+  return result.name || "";
+}
+
+function getBigDataCloudLocationLabel(data) {
+  if (!data) {
+    return "";
+  }
+
+  return data.city || data.locality || data.localityInfo?.administrative?.find((item) => item?.adminLevel >= 8)?.name || "";
+}
+
+function getNearbyKnownLocationLabel(coords) {
+  return getDistanceInMiles(coords, ST_LOUIS_LOCATION) <= 35 ? ST_LOUIS_LOCATION.label : "";
+}
+
+function getDistanceInMiles(start, end) {
+  const earthRadiusMiles = 3958.8;
+  const startLatitude = toRadians(start.latitude);
+  const endLatitude = toRadians(end.latitude);
+  const latitudeDelta = toRadians(end.latitude - start.latitude);
+  const longitudeDelta = toRadians(end.longitude - start.longitude);
+  const a =
+    Math.sin(latitudeDelta / 2) ** 2 +
+    Math.cos(startLatitude) * Math.cos(endLatitude) * Math.sin(longitudeDelta / 2) ** 2;
+
+  return earthRadiusMiles * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function toRadians(degrees) {
+  return degrees * (Math.PI / 180);
+}
+
+function getWeatherLocationLabel(weather) {
+  const location = weather?.location || weather?.metadata?.location || {};
+  const labelCandidates = [
+    weather?.name,
+    weather?.city,
+    weather?.locationName,
+    location?.name,
+    location?.city,
+    location?.label,
+  ];
+
+  for (const candidate of labelCandidates) {
+    const value = String(candidate || "").trim();
+    if (value && !/your location/i.test(value) && !isCoordinateLabel(value)) {
+      return value.split(",")[0].trim();
+    }
+  }
+
+  const city = location?.city || location?.name || weather?.city;
+  return String(city || "").split(",")[0].trim();
+}
+
+function formatCoordinateLabel({ latitude, longitude }) {
+  return `${latitude.toFixed(2)}, ${longitude.toFixed(2)}`;
+}
+
+function isCoordinateLabel(value) {
+  return /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(value);
+}
+
+function isValidTimeZone(timeZone) {
+  if (!timeZone) {
+    return false;
+  }
+
+  try {
+    new Intl.DateTimeFormat([], { timeZone }).format(new Date());
+    return true;
+  } catch (error) {
+    return false;
   }
 }
 
@@ -801,7 +1034,7 @@ function getProductThumbnail(productId, fallbackImage) {
     approving: "images/smiski-approving.png",
     researching: "images/smiski-researching.png",
     "good-idea": "images/smiski-good-idea.png",
-    "on-the-rord": "images/smiski-on-the-rord.png",
+    "on-the-road": "images/smiski-on-the-rord.png",
     presenting: "images/smiski-presenting.png",
   };
 
