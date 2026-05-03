@@ -444,6 +444,9 @@ const legacyProductIds = {
   "clipboard-runner": "on-the-rord",
   "corner-presenter": "presenting",
 };
+const WEATHER_API_URL = "https://cse2004.com/api/weather?latitude=38.627&longitude=-90.199";
+const DAYLIGHT_API_URL = "https://api.sunrise-sunset.org/json?lat=38.627&lng=-90.199&formatted=0";
+const DAYLIGHT_REFRESH_MS = 15 * 60 * 1000;
 const savedProducts = new Set(migrateSavedProducts(JSON.parse(localStorage.getItem("savedSmiskis") || "[]")));
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const productsById = buildProductIndex();
@@ -469,6 +472,46 @@ function updateCurrentTime() {
     hour: "numeric",
     minute: "2-digit",
   }).format(new Date());
+}
+
+function isBetweenSunriseAndSunset(daylight, currentDate = new Date()) {
+  const sunrise = daylight?.results?.sunrise ? new Date(daylight.results.sunrise) : null;
+  const sunset = daylight?.results?.sunset ? new Date(daylight.results.sunset) : null;
+
+  if (!sunrise || !sunset || Number.isNaN(sunrise.valueOf()) || Number.isNaN(sunset.valueOf())) {
+    return null;
+  }
+
+  return currentDate >= sunrise && currentDate < sunset;
+}
+
+async function updateModeFromSunriseSunset() {
+  try {
+    const weatherResponse = await fetch(WEATHER_API_URL);
+
+    if (!weatherResponse.ok) {
+      throw new Error("Weather API request failed");
+    }
+
+    const weather = await weatherResponse.json();
+    const daylightResponse = await fetch(DAYLIGHT_API_URL);
+
+    if (!daylightResponse.ok) {
+      throw new Error("Daylight API request failed");
+    }
+
+    const daylight = await daylightResponse.json();
+    const isDaylight = isBetweenSunriseAndSunset(daylight);
+
+    if (isDaylight === null) {
+      applyMode(weather.isDaytime ? "day" : "night");
+      return;
+    }
+
+    applyMode(isDaylight ? "day" : "night");
+  } catch (error) {
+    applyMode(getModeFromTime());
+  }
 }
 
 function showHome() {
@@ -945,4 +988,6 @@ savedList.addEventListener("keydown", (event) => {
 applyMode(currentMode);
 updateCurrentTime();
 window.setInterval(updateCurrentTime, 60000);
+updateModeFromSunriseSunset();
+window.setInterval(updateModeFromSunriseSunset, DAYLIGHT_REFRESH_MS);
 renderSavedList();
