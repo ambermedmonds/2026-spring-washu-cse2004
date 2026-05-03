@@ -8,22 +8,43 @@
       name="description"
       content="Explore a cozy dollhouse and browse official Smiski series by room."
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Luckiest+Guy&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="mode-panel" aria-live="polite">
-      <span id="mode-label">Day Mode</span>
-      <button id="mode-toggle" class="small-button mode-switch" type="button" aria-label="Toggle day and night mode">
-        <span class="switch-icon" aria-hidden="true"></span>
-      </button>
-    </div>
+    <nav class="app-nav" aria-label="Smiski Adventures navigation">
+      <a class="nav-logo" href="#home-screen" aria-label="Smiski Adventures home">
+        <img src="images/smiski-logo.svg" alt="Smiski" />
+      </a>
+      <div class="mode-panel" aria-live="polite">
+        <button id="open-saved" class="saved-launcher" type="button">
+          <img src="images/unfilled-heart.png" alt="" aria-hidden="true" />
+          Saved
+        </button>
+        <div class="mode-control">
+          <button id="mode-toggle" class="small-button mode-switch" type="button" aria-label="Toggle day and night mode">
+            <span class="switch-icon" aria-hidden="true"></span>
+          </button>
+          <span class="mode-text">
+            <span id="mode-label">Day Mode</span>
+            <span id="current-time" class="current-time"></span>
+          </span>
+        </div>
+      </div>
+    </nav>
 
     <main>
       <section id="home-screen" class="screen is-active intro-mode" aria-labelledby="home-title">
         <div class="intro">
+          <img class="intro-background-art" src="images/smiski-background.png" alt="" aria-hidden="true" />
           <h1 id="home-title">SMISKI ADVENTURES</h1>
-          <p>Explore each room, preview the series, and shop the official Smiski collections</p>
-          <button id="start-button" class="primary-button" type="button">Explore Collections</button>
+          <p>Explore each room and shop the official Smiski collections</p>
+          <button id="start-button" class="primary-button" type="button">Start Exploring</button>
         </div>
 
         <div class="image-stage house-stage" id="house-stage">
@@ -50,11 +71,25 @@
 
       <section id="room-screen" class="screen" aria-labelledby="room-title">
         <div class="room-header">
-          <button id="back-button" class="secondary-button" type="button">Back to Home</button>
-          <div>
+          <div class="room-nav" aria-label="Room navigation">
+            <button id="room-home-button" class="room-nav-button room-home-button" type="button" aria-label="Back to house">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 10.5 12 3l9 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-5v-6h-5v6h-5A1.5 1.5 0 0 1 3 19.5z" />
+              </svg>
+            </button>
+            <button id="previous-room-button" class="room-nav-button room-arrow-button" type="button" aria-label="Previous room">
+              <span aria-hidden="true">&larr;</span>
+            </button>
+            <button id="next-room-button" class="room-nav-button room-arrow-button" type="button" aria-label="Next room">
+              <span aria-hidden="true">&rarr;</span>
+            </button>
+          </div>
+          <div class="room-copy">
             <h2 id="room-title">BEDROOM</h2>
             <p>Click each Smiski to preview the collection and visit the official series page</p>
-            <span id="room-badge" class="room-badge">Bed Series</span>
+            <a id="room-series-link" class="room-series-link" href="https://smiski.com/e/products/bed-series/" target="_blank" rel="noopener">
+              Shop The Series
+            </a>
           </div>
         </div>
 
@@ -70,7 +105,10 @@
     <div id="popup-overlay" class="popup-overlay" hidden>
       <article class="popup-card" role="dialog" aria-modal="true" aria-labelledby="popup-title">
         <button id="close-popup" class="close-button" type="button" aria-label="Close popup">x</button>
-        <p id="popup-kicker" class="popup-kicker">Smiski Series</p>
+        <button id="save-button" class="save-button" type="button" aria-pressed="false">
+          <img src="images/unfilled-heart.png" alt="" aria-hidden="true" />
+          Save
+        </button>
         <h3 id="popup-title">Smiski</h3>
         <p id="popup-description"></p>
         <dl>
@@ -82,14 +120,20 @@
             <dt>Personality</dt>
             <dd id="popup-personality"></dd>
           </div>
-          <div>
-            <dt>Display Spot</dt>
-            <dd id="popup-spot"></dd>
-          </div>
         </dl>
-        <a id="popup-link" class="product-link" href="#" target="_blank" rel="noopener">View Official Series</a>
       </article>
     </div>
+
+    <aside id="saved-drawer" class="saved-drawer" aria-label="Saved Smiskis">
+      <div class="saved-header">
+        <div>
+          <p>Wishlist</p>
+          <h2>Saved Smiskis</h2>
+        </div>
+        <button id="close-saved" class="close-button" type="button" aria-label="Close saved Smiskis">x</button>
+      </div>
+      <div id="saved-list" class="saved-list"></div>
+    </aside>
 
     <script src="script.js"></script>
   </body>
