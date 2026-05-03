@@ -760,6 +760,11 @@ body.night-mode .house-hotspot span {
 
 .room-header h2 + p {
   margin-top: 0.35rem;
+  color: #7a5a43;
+}
+
+body.night-mode .room-header h2 + p {
+  color: #FFF7EB;
 }
 
 .room-nav {
@@ -1120,7 +1125,7 @@ dd {
 .saved-list {
   display: grid;
   gap: 0.75rem;
-  margin-top: 1rem;
+  margin-top: 0.35rem;
 }
 
 .saved-empty,
@@ -1281,6 +1286,10 @@ body.night-mode .saved-empty,
 body.night-mode .saved-item {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.16);
+}
+
+body.night-mode .saved-empty {
+  color: #FFF7EB;
 }
 
 body.night-mode .saved-thumb {
