@@ -554,9 +554,11 @@ async function resolveUserLocation() {
     return await enrichLocation(coords, getNearbyKnownLocationLabel(coords) || formatCoordinateLabel(coords));
   } catch (error) {
     const fallbackCoords = await geocodeLocationQuery(FALLBACK_LOCATION_QUERY);
+    const fallbackLabel = error?.code === 1 ? LOCATION_DENIED_LABEL : ST_LOUIS_LOCATION.label;
+
     return {
       ...(await enrichLocation(fallbackCoords, ST_LOUIS_LOCATION.label)),
-      label: LOCATION_DENIED_LABEL,
+      label: fallbackLabel,
     };
   }
 }
