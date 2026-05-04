@@ -404,6 +404,7 @@ const modeToggle = document.querySelector("#mode-toggle");
 const openSavedButton = document.querySelector("#open-saved");
 const closeSavedButton = document.querySelector("#close-saved");
 const savedDrawer = document.querySelector("#saved-drawer");
+const savedDragHint = document.querySelector("#saved-drag-hint");
 const savedList = document.querySelector("#saved-list");
 
 let currentMode = getModeFromTime();
@@ -1046,6 +1047,7 @@ function getProductThumbnail(productId, fallbackImage) {
 function renderSavedList() {
   const savedItemIds = savedDrawerItemIds.length > 0 ? savedDrawerItemIds : [...savedProducts];
   const savedItems = savedItemIds.map((id) => productsById[id]).filter(Boolean);
+  savedDragHint.hidden = savedItems.length < 2;
 
   if (savedItems.length === 0) {
     savedList.innerHTML = '<p class="saved-empty">No saved Smiskis yet. Open a product card and tap the heart to add one.</p>';
